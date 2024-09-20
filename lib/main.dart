@@ -124,6 +124,29 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class ReferenceItem extends StatelessWidget {
+
+  const ReferenceItem({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Add A New Reference"),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Text("Title"),
+            Text("Authors"),
+          ]
+        )
+      )
+    );
+  }
+
+}
+
 class _MyHomePageState extends State<MyHomePage> {
 
   @override
@@ -147,8 +170,13 @@ class _MyHomePageState extends State<MyHomePage> {
       body:
         _ExplorerWidget(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Increment',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ReferenceItem()),
+          );
+        },
+        tooltip: 'Add a new reference',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
