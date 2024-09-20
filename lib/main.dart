@@ -44,6 +44,33 @@ class _ExplorerWidget extends StatefulWidget {
 
 class _ExplorerState extends State<_ExplorerWidget> {
 
+  List<String> _allItems = ["Test", "Test 00", "Test 01"];
+  List<String> _filteredItems = [];
+
+  // TODO remove this
+  @override
+  void initState() {
+    super.initState();
+    _filterItems("");
+  }
+
+  void _filterItems(String query) {
+
+    List<String> results = [];
+
+    if (query.isEmpty) {
+      results = _allItems;
+    } else {
+      results = _allItems
+      .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+      .toList();
+    }
+
+    setState(() {
+      _filteredItems = results;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -52,9 +79,9 @@ class _ExplorerState extends State<_ExplorerWidget> {
       children: <Widget>[
 
           TextField(
-                        // onChanged: (value) {
-                        //   _filterItems(value); // Perform search on text change
-                        // },
+                        onChanged: (text) {
+                          _filterItems(text); // Perform search on text change
+                        },
                         decoration: InputDecoration(
                           hintText: 'Search...',
                           prefixIcon: Icon(Icons.search),
@@ -66,26 +93,13 @@ class _ExplorerState extends State<_ExplorerWidget> {
 
 
             Expanded (
-                child: ListView(
-              padding: const EdgeInsets.all(8),
-              children: <Widget>[
-                Container(
-                  height: 50,
-                  color: Colors.amber[600],
-                  child: const Center(child: Text('Entry A')),
-                ),
-                Container(
-                  height: 50,
-                  color: Colors.amber[500],
-                  child: const Center(child: Text('Entry B')),
-                ),
-                Container(
-                  height: 50,
-                  color: Colors.amber[100],
-                  child: const Center(child: Text('Entry C')),
-                ),
-              ],
-            )
+                child:
+                  ListView.builder(
+                    itemCount: _filteredItems.length,
+                    itemBuilder: (context, index) {
+                      return Text(_filteredItems[index]);
+                    },
+                  )
 
             )
     ],);
