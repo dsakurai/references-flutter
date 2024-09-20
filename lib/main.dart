@@ -147,23 +147,34 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
       body: Center(
         child: Column(
           children: [
+            Row(
+              children: [
+                Text("Title: "),
+                Expanded(child: TextFormField(
+                    initialValue: item.title,
+                    onChanged: (value) {
+                      setState(() {
+                        item.title = value;
+                      });
+                    },
+                ))
+              ],
+              // TextFormField(initialValue: "test",),
+            ),
             // Title
-            TextFormField(
-              initialValue: item.title,
-              onChanged: (value) {
-                setState(() {
-                  item.title = value;
-                });
-              },
-            ),
-            TextFormField(
-              initialValue: item.authors,
-              onChanged: (value) {
-                setState(() {
-                  item.authors = value;
-                });
-              },
-            ),
+            Row(
+              children: [
+                Text("Authors: "),
+                                Expanded(child: TextFormField(
+                    initialValue: item.authors,
+                    onChanged: (value) {
+                      setState(() {
+                        item.authors = value;
+                      });
+                    },
+                ))
+              ]
+            )
           ]
         )
       )
