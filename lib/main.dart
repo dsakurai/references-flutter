@@ -36,6 +36,64 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class ReferenceItem {
+  String? title;
+  String? authors;
+}
+
+class ReferenceItemWidget extends StatefulWidget {
+
+  @override
+  ReferenceItemWidgetState createState() => ReferenceItemWidgetState();
+}
+
+class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
+  ReferenceItem item = ReferenceItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Add A New Reference"),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Text("Title: "),
+                Expanded(child: TextFormField(
+                    initialValue: item.title,
+                    onChanged: (value) {
+                      setState(() {
+                        item.title = value;
+                      });
+                    },
+                ))
+              ],
+              // TextFormField(initialValue: "test",),
+            ),
+            // Title
+            Row(
+              children: [
+                Text("Authors: "),
+                                Expanded(child: TextFormField(
+                    initialValue: item.authors,
+                    onChanged: (value) {
+                      setState(() {
+                        item.authors = value;
+                      });
+                    },
+                ))
+              ]
+            )
+          ]
+        )
+      )
+    );
+  }
+}
+
 class _ExplorerWidget extends StatefulWidget {
 
   @override
@@ -122,64 +180,6 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class ReferenceItem {
-  String? title;
-  String? authors;
-}
-
-class ReferenceItemWidget extends StatefulWidget {
-
-  @override
-  ReferenceItemWidgetState createState() => ReferenceItemWidgetState();
-}
-
-class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
-  ReferenceItem item = ReferenceItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Add A New Reference"),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Text("Title: "),
-                Expanded(child: TextFormField(
-                    initialValue: item.title,
-                    onChanged: (value) {
-                      setState(() {
-                        item.title = value;
-                      });
-                    },
-                ))
-              ],
-              // TextFormField(initialValue: "test",),
-            ),
-            // Title
-            Row(
-              children: [
-                Text("Authors: "),
-                                Expanded(child: TextFormField(
-                    initialValue: item.authors,
-                    onChanged: (value) {
-                      setState(() {
-                        item.authors = value;
-                      });
-                    },
-                ))
-              ]
-            )
-          ]
-        )
-      )
-    );
-  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
