@@ -46,9 +46,9 @@ class ReferenceItem {
 
 class ReferenceItemWidget extends StatefulWidget {
 
-  ReferenceItem referenceItem;
+  final ReferenceItem referenceItem;
 
-  ReferenceItemWidget({
+  const ReferenceItemWidget({
     super.key,
     required this.referenceItem
   });
@@ -58,7 +58,6 @@ class ReferenceItemWidget extends StatefulWidget {
 }
 
 class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
-  ReferenceItem item = ReferenceItem();
 
   @override
   Widget build(BuildContext context) {
@@ -73,10 +72,10 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               children: [
                 Text("Title: "),
                 Expanded(child: TextFormField(
-                    initialValue: item.title,
+                    initialValue: widget.referenceItem.title,
                     onChanged: (value) {
                       setState(() {
-                        item.title = value;
+                        widget.referenceItem.title = value;
                       });
                     },
                 ))
@@ -88,10 +87,10 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               children: [
                 Text("Authors: "),
                                 Expanded(child: TextFormField(
-                    initialValue: item.authors,
+                    initialValue: widget.referenceItem.authors,
                     onChanged: (value) {
                       setState(() {
-                        item.authors = value;
+                        widget.referenceItem.authors = value;
                       });
                     },
                 ))
