@@ -111,8 +111,22 @@ class _ExplorerWidget extends StatefulWidget {
 
 class _ExplorerState extends State<_ExplorerWidget> {
 
-  List<String> _allItems = ["Test", "Test 00", "Test 01"];
-  List<String> _filteredItems = [];
+  List<ReferenceItem> _allItems = [
+    ReferenceItem(
+      title: "Test Title",
+      authors: "Test author",
+    ),
+    ReferenceItem(
+      title: "Test Title 01",
+      authors: "Test author 01",
+    ),
+    ReferenceItem(
+      title: "Test Title 02",
+      authors: "Test author",
+    ),
+  ];
+
+  List<ReferenceItem> _filteredItems = [];
 
   // TODO remove this
   @override
@@ -123,13 +137,20 @@ class _ExplorerState extends State<_ExplorerWidget> {
 
   void _filterItems(String query) {
 
-    List<String> results = [];
+    List<ReferenceItem> results = [];
 
     if (query.isEmpty) {
       results = _allItems;
     } else {
       results = _allItems
-      .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+      .where((item) {
+
+        if (item.title case var itemTitle?) {
+          return itemTitle.toLowerCase().contains(query.toLowerCase());
+        }
+
+        return false;
+      })
       .toList();
     }
 
@@ -164,7 +185,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
                   ListView.builder(
                     itemCount: _filteredItems.length,
                     itemBuilder: (context, index) {
-                      return Text(_filteredItems[index]);
+                      return Text(_filteredItems[index].title ?? "");
                     },
                   )
 
