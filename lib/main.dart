@@ -39,9 +39,13 @@ class MyApp extends StatelessWidget {
 class ReferenceItem {
   String? title;
   String? authors;
+
+  // Generative constor with default param values
+  ReferenceItem({this.title, this.authors});
 }
 
 class ReferenceItemWidget extends StatefulWidget {
+  const ReferenceItemWidget({super.key});
 
   @override
   ReferenceItemWidgetState createState() => ReferenceItemWidgetState();
