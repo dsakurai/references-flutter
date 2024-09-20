@@ -114,15 +114,15 @@ class _ExplorerState extends State<_ExplorerWidget> {
   List<ReferenceItem> _allItems = [
     ReferenceItem(
       title: "Test Title",
-      authors: "Test author",
+      authors: "Test Author",
     ),
     ReferenceItem(
       title: "Test Title 01",
-      authors: "Test author 01",
+      authors: "Test Author 01",
     ),
     ReferenceItem(
       title: "Test Title 02",
-      authors: "Test author",
+      authors: "Test Author",
     ),
   ];
 
@@ -185,7 +185,22 @@ class _ExplorerState extends State<_ExplorerWidget> {
                   ListView.builder(
                     itemCount: _filteredItems.length,
                     itemBuilder: (context, index) {
-                      return Text(_filteredItems[index].title ?? "");
+                      return ListTile(
+                        title: Text(_filteredItems[index].title ?? ""),
+                        trailing:
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: 
+                                  (context) => ReferenceItemWidget(referenceItem: _filteredItems[index])
+                                )
+                              ).then(
+                                (_) { setState(() {}); }  // reload this page after coming back from the page
+                              );
+                            },
+                            child: Text("Go"))
+                      );
                     },
                   )
 
@@ -239,6 +254,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ReferenceItemWidget(referenceItem: ReferenceItem(),)),
+          ).then(
+            (_){setState(() {});} // reload this page after coming back from the page
           );
         },
         tooltip: 'Add a new reference',
