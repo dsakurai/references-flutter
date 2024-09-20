@@ -124,9 +124,9 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class ReferenceItem extends StatelessWidget {
+class ReferenceItemWidget extends StatelessWidget {
 
-  const ReferenceItem({super.key});
+  const ReferenceItemWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ReferenceItem()),
+            MaterialPageRoute(builder: (context) => const ReferenceItemWidget()),
           );
         },
         tooltip: 'Add a new reference',
