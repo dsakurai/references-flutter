@@ -36,6 +36,62 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class _ExplorerWidget extends StatefulWidget {
+
+  @override
+  _ExplorerState createState() => _ExplorerState();
+}
+
+class _ExplorerState extends State<_ExplorerWidget> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+
+          TextField(
+                        // onChanged: (value) {
+                        //   _filterItems(value); // Perform search on text change
+                        // },
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+
+
+            Expanded (
+                child: ListView(
+              padding: const EdgeInsets.all(8),
+              children: <Widget>[
+                Container(
+                  height: 50,
+                  color: Colors.amber[600],
+                  child: const Center(child: Text('Entry A')),
+                ),
+                Container(
+                  height: 50,
+                  color: Colors.amber[500],
+                  child: const Center(child: Text('Entry B')),
+                ),
+                Container(
+                  height: 50,
+                  color: Colors.amber[100],
+                  child: const Center(child: Text('Entry C')),
+                ),
+              ],
+            )
+
+            )
+    ],);
+  }
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -113,39 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
 
-            Expanded (
-                child: ListView(
-              padding: const EdgeInsets.all(8),
-              children: <Widget>[
-                Container(
-                  height: 50,
-                  color: Colors.amber[600],
-                  child: const Center(child: Text('Entry A')),
-                ),
-                Container(
-                  height: 50,
-                  color: Colors.amber[500],
-                  child: const Center(child: Text('Entry B')),
-                ),
-                Container(
-                  height: 50,
-                  color: Colors.amber[100],
-                  child: const Center(child: Text('Entry C')),
-                ),
-                Container(
-                  height: 50,
-                  color: Colors.amber[100],
-                  child: const Center(child: Text('Entry C')),
-                ),
-                Container(
-                  height: 50,
-                  color: Colors.amber[100],
-                  child: const Center(child: Text('Entry C')),
-                ),
-              ],
-            )
-
-            )
+            Expanded(child: _ExplorerWidget(),)
 
           ],
         ),
