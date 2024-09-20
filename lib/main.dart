@@ -86,14 +86,14 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
             Row(
               children: [
                 Text("Authors: "),
-                                Expanded(child: TextFormField(
+                  Expanded(child: TextFormField(
                     initialValue: widget.referenceItem.authors,
                     onChanged: (value) {
                       setState(() {
                         widget.referenceItem.authors = value;
                       });
                     },
-                ))
+                  ))
               ]
             )
           ]
