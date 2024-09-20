@@ -124,9 +124,19 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class ReferenceItemWidget extends StatelessWidget {
+class ReferenceItem {
+  String? title;
+  String? authors;
+}
 
-  const ReferenceItemWidget({super.key});
+class ReferenceItemWidget extends StatefulWidget {
+
+  @override
+  ReferenceItemWidgetState createState() => ReferenceItemWidgetState();
+}
+
+class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
+  ReferenceItem item = ReferenceItem();
 
   @override
   Widget build(BuildContext context) {
@@ -137,14 +147,13 @@ class ReferenceItemWidget extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            Text("Title"),
+            Text("Title test"),
             Text("Authors"),
           ]
         )
       )
     );
   }
-
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -173,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ReferenceItemWidget()),
+            MaterialPageRoute(builder: (context) => ReferenceItemWidget()),
           );
         },
         tooltip: 'Add a new reference',
