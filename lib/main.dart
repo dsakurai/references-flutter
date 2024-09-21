@@ -250,7 +250,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
                             onPressed: () {
 
                               var itemOriginal = _filteredItems[index];
-                              var itemEdited   = itemOriginal.copy();
+                              var itemForEdit   = itemOriginal.copy();
 
                               Navigator.push(
                                 context,
@@ -262,10 +262,10 @@ class _ExplorerState extends State<_ExplorerWidget> {
                                     // get user confirmation to pop this widget
                                     onPopInvokedWithResult: (didPop, result) async {
                                       if (didPop) {return;} // too late => do nothing
-                                      _popIfFine(itemOriginal, itemEdited, context, result);
+                                      _popIfFine(itemOriginal, itemForEdit, context, result);
                                     },
 
-                                    child: ReferenceItemWidget(referenceItem: itemEdited)
+                                    child: ReferenceItemWidget(referenceItem: itemForEdit)
                                   )
                                 )
                               ).then(
