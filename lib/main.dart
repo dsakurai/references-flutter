@@ -147,7 +147,7 @@ Future<bool?> _popConfirmationDialog (BuildContext context) async {
   );
 }
 
-void _playSafe(ReferenceItem itemOriginal,
+void _popIfFine(ReferenceItem itemOriginal,
               ReferenceItem itemEdited,
               context, result) async {
 
@@ -259,7 +259,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
                                     // get user confirmation to pop this widget
                                     onPopInvokedWithResult: (didPop, result) async {
                                       if (didPop) {return;} // too late => do nothing
-                                      _playSafe(itemOriginal, itemEdited, context, result);
+                                      _popIfFine(itemOriginal, itemEdited, context, result);
                                     },
 
                                     child: ReferenceItemWidget(referenceItem: itemEdited)
