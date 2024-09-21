@@ -168,6 +168,32 @@ void _popIfFine(ReferenceItem itemOriginal,
 
 }
 
+dynamic _navigateEditRoute({
+  required ReferenceItem itemOriginal,
+  required BuildContext context,
+  }) {
+
+  var itemForEdit   = itemOriginal.copy();
+
+  return Navigator.push(
+    context,
+    MaterialPageRoute(builder: 
+      (context) =>
+      PopScope(
+        canPop: false,
+
+        // get user confirmation to pop this widget
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) {return;} // too late => do nothing
+          _popIfFine(itemOriginal, itemForEdit, context, result);
+        },
+
+        child: ReferenceItemWidget(referenceItem: itemForEdit)
+      )
+    )
+  );
+}
+
 class _ExplorerState extends State<_ExplorerWidget> {
 
   List<ReferenceItem> _allItems = [
@@ -248,28 +274,11 @@ class _ExplorerState extends State<_ExplorerWidget> {
                         trailing:
                           ElevatedButton(
                             onPressed: () {
-
-                              var itemOriginal = _filteredItems[index];
-                              var itemForEdit   = itemOriginal.copy();
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: 
-                                  (context) =>
-                                  PopScope(
-                                    canPop: false,
-
-                                    // get user confirmation to pop this widget
-                                    onPopInvokedWithResult: (didPop, result) async {
-                                      if (didPop) {return;} // too late => do nothing
-                                      _popIfFine(itemOriginal, itemForEdit, context, result);
-                                    },
-
-                                    child: ReferenceItemWidget(referenceItem: itemForEdit)
-                                  )
-                                )
+                              _navigateEditRoute(
+                                itemOriginal: _filteredItems[index],
+                                context: context,
                               ).then(
-                                (_) { setState(() {}); }  // reload this page after coming back from the page
+                                (_){setState(() { });} // reload this page after coming back from the page
                               );
                             },
                             child: Text("Go"))
