@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:equatable/equatable.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,7 +37,6 @@ class MyApp extends StatelessWidget {
 }
 
 class ReferenceItem
-  extends Equatable // Compare two instances by value, not references
  {
   String? title;
   String? authors;
@@ -51,8 +49,13 @@ class ReferenceItem
   // Generative constor with default param values
   ReferenceItem({this.title, this.authors});
 
-  @override
-  List<Object?> get props => [title, authors]; // Use these properties for equality comparison with '=='
+  bool matches(ReferenceItem that) {
+    return 
+      // Strings are immutable, so comparison by object adresses are fine.
+      (title   == that.title) &&
+      (authors == that.authors)
+    ;
+  }
 }
 
 class ReferenceItemWidget extends StatefulWidget {
@@ -151,7 +154,7 @@ void _popIfFine(ReferenceItem itemOriginal,
               ReferenceItem itemEdited,
               context, result) async {
 
-  if (itemEdited != itemOriginal) {
+  if (! itemEdited.matches(itemOriginal)) {
     // user edited this reference => ask the user
 
     bool? doAbandon = await _popConfirmationDialog(context); // Abandon the edit? 
