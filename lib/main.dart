@@ -238,13 +238,11 @@ class _ExplorerState extends State<_ExplorerWidget> {
 
   void _filterItems(String query) {
 
-    List<ReferenceItem> results = [];
+    List<ReferenceItem> items = widget.allItems;
 
-    if (query.isEmpty) {
-      results = widget.allItems;
-    } else {
-      results = widget.allItems
-      .where((item) {
+    if (query.isNotEmpty) {
+      // Filter items
+      items = items.where((item) {
 
         if (item.title case var itemTitle?) {
           return itemTitle.toLowerCase().contains(query.toLowerCase());
@@ -256,7 +254,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
     }
 
     setState(() {
-      _filteredItems = results;
+      _filteredItems = items;
     });
   }
 
