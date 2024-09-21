@@ -265,41 +265,41 @@ class _ExplorerState extends State<_ExplorerWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
 
-          TextField(
-                        onChanged: (text) {
-                          _filterItems(text); // Perform search on text change
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Search...',
-                          prefixIcon: Icon(Icons.search),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                      ),
+        TextField(
+          onChanged: (text) {
+            _filterItems(text); // Perform search on text change
+          },
+          decoration: InputDecoration(
+            hintText: 'Search...',
+            prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+        ),
 
-          Expanded (
-                child:
-                  ListView.builder(
-                    itemCount: _filteredItems.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(_filteredItems[index].title ?? ""),
-                        trailing:
-                          ElevatedButton(
-                            onPressed: () {
-                              _navigateEditRoute(
-                                itemOriginal: _filteredItems[index],
-                                context: context,
-                              ).then(
-                                (_){setState(() { });} // reload this page after coming back from the page
-                              );
-                            },
-                            child: Text("Go"))
-                      );
-                    },
-                  )
-          )
+        Expanded (
+          child:
+            ListView.builder(
+              itemCount: _filteredItems.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_filteredItems[index].title ?? ""),
+                  trailing:
+                    ElevatedButton(
+                      onPressed: () {
+                        _navigateEditRoute(
+                          itemOriginal: _filteredItems[index],
+                          context: context,
+                        ).then(
+                          (_){setState(() { });} // reload this page after coming back from the page
+                        );
+                      },
+                      child: Text("Go"))
+                );
+              },
+            )
+        )
     ],);
   }
 }
