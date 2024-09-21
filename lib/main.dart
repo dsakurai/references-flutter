@@ -228,6 +228,7 @@ void _popIfFine(
 Future<Navigator?> _navigateEditRoute({
   required ReferenceItem itemOriginal,
   required BuildContext context,
+  Function? onSave, // Designed for adding a new item
   }) {
 
   var itemForEdit   = itemOriginal.clone();
@@ -251,6 +252,7 @@ Future<Navigator?> _navigateEditRoute({
           },
           onSaveButtonPressed: (){
             itemOriginal.copyPropertiesFrom(itemForEdit);
+            if (onSave != null) {onSave();}
             Navigator.of(context).pop(); // Navigate back to the page before
           },
           )
@@ -393,11 +395,11 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           var newItem = ReferenceItem();
           _navigateEditRoute( // go to another page
-            itemOriginal: newItem, context: context
+            itemOriginal: newItem,
+            context: context,
+            onSave: () { _allItems.add(newItem); }
           ).then(
-            (_){setState(() {
-              _allItems.add(newItem);
-            });} // reload this page after coming back from the page
+            (_){setState((){});} // reload this page after coming back from the page
           );
         },
         tooltip: 'Add a new reference',
