@@ -41,8 +41,8 @@ class MyApp extends StatelessWidget {
 
 class ReferenceItem
  {
-  String? title;
-  String? authors;
+  String title;
+  String authors;
 
   ReferenceItem clone() => ReferenceItem(
     title: title,
@@ -55,7 +55,7 @@ class ReferenceItem
   }
 
   // Generative constor with default param values
-  ReferenceItem({this.title, this.authors});
+  ReferenceItem({this.title = "", this.authors = ""});
 
   bool matches(ReferenceItem that) {
     return 
@@ -277,12 +277,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
     if (query.isNotEmpty) {
       // Filter items
       items = items.where((item) {
-
-        if (item.title case var itemTitle?) {
-          return itemTitle.toLowerCase().contains(query.toLowerCase());
-        }
-
-        return false;
+        return item.title.toLowerCase().contains(query.toLowerCase());
       })
       .toList();
     }
@@ -318,7 +313,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
               itemCount: _filteredItems.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(_filteredItems[index].title ?? ""),
+                  title: Text(_filteredItems[index].title),
                   trailing:
                     ElevatedButton(
                       onPressed: () {
