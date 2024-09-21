@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:typed_data';
+import 'dart:html' as html; // TODO Make it available for desktop? Works only for the web right now.
 
 void main() {
   runApp(const MyApp());
@@ -109,6 +112,25 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                     },
                   ))
               ]
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  // Load PDF
+                  ByteData data = await rootBundle.load("assets/sample.pdf");
+                  Uint8List bytes = data.buffer.asUint8List();
+
+                  final blob = html.Blob([bytes], 'application/pdf');
+                  final url  = html.Url.createObjectUrlFromBlob(blob);
+
+                  html.window.open(url, "_blank"); // Open in new tab
+
+                  html.Url.revokeObjectUrl(url); // Free the memory
+                } catch (e) {
+                  print("Error loading PDF: $e");
+                }
+              },
+              child: Text("Show PDF")
             )
           ]
         )
