@@ -69,11 +69,13 @@ class ReferenceItem
 class ReferenceItemWidget extends StatefulWidget {
 
   final ReferenceItem referenceItem;
+  final Function onCancelButtonPressed;
   final Function onSaveButtonPressed;
 
   const ReferenceItemWidget({
     super.key,
     required this.referenceItem,
+    required this.onCancelButtonPressed,
     required this.onSaveButtonPressed,
   });
 
@@ -88,6 +90,17 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add A New Reference"),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            widget.onCancelButtonPressed();
+
+            // Navigation is done inside the function above
+            // because the async code is simpler.
+            // This is not allowed without await above and some additional async code I haven't investigated yet..:
+            // Navigator.of(context).pop(); // Navigate back to the page before
+          }
+          )
       ),
       body: Center(
         child: Column(
@@ -95,7 +108,6 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
             TextButton(
               onPressed: () {
                 widget.onSaveButtonPressed(); // save reference item
-                Navigator.of(context).pop(); // Navigate back to the page before
               },
               child: Text("Save")
             ),
@@ -195,9 +207,10 @@ Future<bool?> _popConfirmationDialog (BuildContext context) async {
   );
 }
 
-void _popIfFine(ReferenceItem itemOriginal,
-              ReferenceItem itemEdited,
-              context, result) async {
+void _popIfFine(
+  ReferenceItem itemOriginal,
+  ReferenceItem itemEdited,
+  context) async {
 
   if (! itemEdited.matches(itemOriginal)) {
     // user edited this reference => ask the user
@@ -209,8 +222,7 @@ void _popIfFine(ReferenceItem itemOriginal,
     if (doAbandon != true) {return;} // Don't abandon edit
   }
 
-  Navigator.of(context).pop(result); // Abandon edit (i.e. close the child widget)
-
+  Navigator.of(context).pop(); // Abandon edit (i.e. close the child widget)
 }
 
 Future<Navigator?> _navigateEditRoute({
@@ -225,20 +237,25 @@ Future<Navigator?> _navigateEditRoute({
     MaterialPageRoute(builder: 
       (context) =>
       PopScope(
-        canPop: false,
+        canPop: false, // Disable the back button from the system
 
         // Back is clicked, instead of save!
         // Before throwing away data,
         // get user confirmation to pop this widget
-        onPopInvokedWithResult: (didPop, result) async {
-          if (didPop) {return;} // too late => do nothing
-          _popIfFine(itemOriginal, itemForEdit, context, result);
-        },
+        // onPopInvokedWithResult: (didPop, result) async {
+        //   if (didPop) {return;} // too late => do nothing
+        //   _popIfFine(itemOriginal, itemForEdit, context, result);
+        // },
 
         child: ReferenceItemWidget(
           referenceItem: itemForEdit,
+          onCancelButtonPressed: () {
+            _popIfFine(itemOriginal, itemForEdit, context);
+            // ^ This also navigates back to the page before if the user confirms it.
+          },
           onSaveButtonPressed: (){
             itemOriginal.copyPropertiesFrom(itemForEdit);
+            Navigator.of(context).pop(); // Navigate back to the page before
           },
           )
       )
