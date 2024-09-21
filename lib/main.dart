@@ -242,10 +242,6 @@ Future<Navigator?> _navigateEditRoute({
         // Back is clicked, instead of save!
         // Before throwing away data,
         // get user confirmation to pop this widget
-        // onPopInvokedWithResult: (didPop, result) async {
-        //   if (didPop) {return;} // too late => do nothing
-        //   _popIfFine(itemOriginal, itemForEdit, context, result);
-        // },
 
         child: ReferenceItemWidget(
           referenceItem: itemForEdit,
