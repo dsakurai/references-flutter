@@ -68,16 +68,21 @@ class ReferenceItem
 
 class ReferenceItemWidget extends StatefulWidget {
 
+  ERROR // TODO No nullable
+  late final ReferenceItem _referenceItemOriginal;
+
   final ReferenceItem referenceItem;
   final Function onCancelButtonPressed;
   final Function onSaveButtonPressed;
 
-  const ReferenceItemWidget({
+  ReferenceItemWidget({
     super.key,
     required this.referenceItem,
     required this.onCancelButtonPressed,
     required this.onSaveButtonPressed,
-  });
+  }) {
+    _referenceItemOriginal = referenceItem.clone();
+  }
 
   @override
   ReferenceItemWidgetState createState() => ReferenceItemWidgetState();
@@ -117,13 +122,23 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                 Expanded(child: TextFormField(
                     initialValue: widget.referenceItem.title,
                     onChanged: (value) {
+
                       setState(() {
-                        widget.referenceItem.title = value;
+
+                        // Empty string (i.e. "") doesn't count as an edit to a string that was null.
+                        if (widget._referenceItemOriginal.title == null &&
+                            value.isEmpty
+                        ) {
+                          widget.referenceItem.title = null;
+                        } else {
+                          widget.referenceItem.title = value;
+                        }
+
+                        widget.referenceItem.title = widget.referenceItem.title;
                       });
                     },
                 ))
               ],
-              // TextFormField(initialValue: "test",),
             ),
             // Title
             Row(
@@ -228,6 +243,7 @@ void _popIfFine(
 Future<Navigator?> _navigateEditRoute({
   required ReferenceItem itemOriginal,
   required BuildContext context,
+  Function? onSave,
   }) {
 
   var itemForEdit   = itemOriginal.clone();
@@ -250,7 +266,15 @@ Future<Navigator?> _navigateEditRoute({
             // ^ This also navigates back to the page before if the user confirms it.
           },
           onSaveButtonPressed: (){
+
+            // This is a problem with the TextForm. Probably we should move this to the TextForm...
+            // if((itemOriginal.title   == null) && (itemForEdit.title   == "")) {itemForEdit.title   = null;}
+            // if((itemOriginal.authors == null) && (itemForEdit.authors == "")) {itemForEdit.authors = null;}
+
             itemOriginal.copyPropertiesFrom(itemForEdit);
+
+            if (onSave != null) { onSave(); }
+
             Navigator.of(context).pop(); // Navigate back to the page before
           },
           )
@@ -397,12 +421,14 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           var newItem = ReferenceItem();
+          // print(newItem.title == null);
           _navigateEditRoute( // go to another page
-            itemOriginal: newItem, context: context
+            itemOriginal: newItem, context: context,
+            onSave: () {
+                _allItems.add(newItem);
+            }
           ).then(
-            (_){setState(() {
-              _allItems.add(newItem);
-            });} // reload this page after coming back from the page
+            (_){setState(() { });} // reload this page after coming back from the page
           );
         },
         tooltip: 'Add a new reference',
