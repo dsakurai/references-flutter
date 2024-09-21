@@ -49,6 +49,11 @@ class ReferenceItem
     authors: authors
   );
 
+  void copyPropertiesFrom(ReferenceItem other) {
+    title   = other.title;
+    authors = other.authors;
+  }
+
   // Generative constor with default param values
   ReferenceItem({this.title, this.authors});
 
@@ -64,10 +69,12 @@ class ReferenceItem
 class ReferenceItemWidget extends StatefulWidget {
 
   final ReferenceItem referenceItem;
+  final Function onSaveButtonPressed;
 
   const ReferenceItemWidget({
     super.key,
-    required this.referenceItem
+    required this.referenceItem,
+    required this.onSaveButtonPressed,
   });
 
   @override
@@ -85,6 +92,13 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
       body: Center(
         child: Column(
           children: [
+            TextButton(
+              onPressed: () {
+                widget.onSaveButtonPressed(); // save reference item
+                Navigator.of(context).pop(); // Navigate back to the page before
+              },
+              child: Text("Save")
+            ),
             Row(
               children: [
                 Text("Title: "),
@@ -199,7 +213,7 @@ void _popIfFine(ReferenceItem itemOriginal,
 
 }
 
-dynamic _navigateEditRoute({
+Future<Navigator?> _navigateEditRoute({
   required ReferenceItem itemOriginal,
   required BuildContext context,
   }) {
@@ -213,13 +227,20 @@ dynamic _navigateEditRoute({
       PopScope(
         canPop: false,
 
+        // Back is clicked, instead of save!
+        // Before throwing away data,
         // get user confirmation to pop this widget
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) {return;} // too late => do nothing
           _popIfFine(itemOriginal, itemForEdit, context, result);
         },
 
-        child: ReferenceItemWidget(referenceItem: itemForEdit)
+        child: ReferenceItemWidget(
+          referenceItem: itemForEdit,
+          onSaveButtonPressed: (){
+            itemOriginal.copyPropertiesFrom(itemForEdit);
+          },
+          )
       )
     )
   );
@@ -362,10 +383,13 @@ class _MyHomePageState extends State<MyHomePage> {
         _ExplorerWidget(allItems: _allItems,),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _navigateEditRoute(
-            itemOriginal: ReferenceItem(), context: context
+          var newItem = ReferenceItem();
+          _navigateEditRoute( // go to another page
+            itemOriginal: newItem, context: context
           ).then(
-            (_){setState(() {});} // reload this page after coming back from the page
+            (_){setState(() {
+              _allItems.add(newItem);
+            });} // reload this page after coming back from the page
           );
         },
         tooltip: 'Add a new reference',
