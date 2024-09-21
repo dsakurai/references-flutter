@@ -211,8 +211,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
                         ),
                       ),
 
-
-            Expanded (
+          Expanded (
                 child:
                   ListView.builder(
                     itemCount: _filteredItems.length,
@@ -250,8 +249,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
                       );
                     },
                   )
-
-            )
+          )
     ],);
   }
 }
