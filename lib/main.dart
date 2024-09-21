@@ -234,7 +234,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
                                       if (didPop) { return; } // too late
 
                                       bool? doPop = await _popConfirmationDialog(context); // ask the user
-                                      if (doPop ?? false) {
+                                      if ((doPop ?? false) && (context.mounted)) {
                                         Navigator.of(context).pop(result); // pop
                                       }
                                     },
