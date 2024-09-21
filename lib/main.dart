@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:equatable/equatable.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +37,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ReferenceItem {
+class ReferenceItem
+  extends Equatable // Compare two instances by value, not references
+ {
   String? title;
   String? authors;
 
@@ -47,6 +50,9 @@ class ReferenceItem {
 
   // Generative constor with default param values
   ReferenceItem({this.title, this.authors});
+
+  @override
+  List<Object?> get props => [title, authors]; // Use these properties for equality comparison with '=='
 }
 
 class ReferenceItemWidget extends StatefulWidget {
@@ -120,20 +126,20 @@ Future<bool?> _popConfirmationDialog (BuildContext context) async {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title:   Text('Confirm Exit'),
-        content: Text('Do you really want to go back?'),
+        title:   Text('Abandon Edit?'),
+        content: Text('Do you really want to abandon the edit?'),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(false);
             },
-            child: Text('No')
+            child: Text('Stay safe')
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(true);
             },
-            child: Text('Yes')
+            child: Text('Abandon edit')
           ),
         ]
       );
@@ -221,6 +227,10 @@ class _ExplorerState extends State<_ExplorerWidget> {
                         trailing:
                           ElevatedButton(
                             onPressed: () {
+
+                              var itemOriginal = _filteredItems[index];
+                              var itemEdited   = itemOriginal.copy();
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: 
@@ -230,15 +240,23 @@ class _ExplorerState extends State<_ExplorerWidget> {
 
                                     // get user confirmation to pop this widget
                                     onPopInvokedWithResult: (didPop, result) async {
-                                      if (didPop) { return; } // too late
 
-                                      bool? doPop = await _popConfirmationDialog(context); // ask the user
-                                      if ((doPop ?? false) && (context.mounted)) {
-                                        Navigator.of(context).pop(result); // pop
+                                      if (didPop) {return;} // too late => do nothing
+
+                                      if (itemEdited != itemOriginal) {
+                                        // user edited this reference => ask the user
+
+                                        bool? doAbandon = await _popConfirmationDialog(context); // Abandon the edit? 
+
+                                        if (!context.mounted) {return;} // Dialog failed => do nothing
+
+                                        if (doAbandon != true) {return;} // Don't abandon edit
                                       }
+
+                                      Navigator.of(context).pop(result); // Abandon edit (i.e. close the child widget)
                                     },
 
-                                    child: ReferenceItemWidget(referenceItem: _filteredItems[index])
+                                    child: ReferenceItemWidget(referenceItem: itemEdited)
                                   )
                                 )
                               ).then(
