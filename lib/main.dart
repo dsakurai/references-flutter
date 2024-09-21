@@ -143,6 +143,13 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
 
 class _ExplorerWidget extends StatefulWidget {
 
+  final List<ReferenceItem> allItems;
+
+  const _ExplorerWidget({
+    super.key,
+    required this.allItems
+  });
+
   @override
   _ExplorerState createState() => _ExplorerState();
 }
@@ -220,21 +227,6 @@ dynamic _navigateEditRoute({
 
 class _ExplorerState extends State<_ExplorerWidget> {
 
-  List<ReferenceItem> _allItems = [
-    ReferenceItem(
-      title: "Test Title",
-      authors: "Test Author",
-    ),
-    ReferenceItem(
-      title: "Test Title 01",
-      authors: "Test Author 01",
-    ),
-    ReferenceItem(
-      title: "Test Title 02",
-      authors: "Test Author",
-    ),
-  ];
-
   List<ReferenceItem> _filteredItems = [];
 
   // TODO remove this
@@ -249,9 +241,9 @@ class _ExplorerState extends State<_ExplorerWidget> {
     List<ReferenceItem> results = [];
 
     if (query.isEmpty) {
-      results = _allItems;
+      results = widget.allItems;
     } else {
-      results = _allItems
+      results = widget.allItems
       .where((item) {
 
         if (item.title case var itemTitle?) {
@@ -334,6 +326,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  List<ReferenceItem> _allItems = [
+    ReferenceItem(
+      title: "Test Title",
+      authors: "Test Author",
+    ),
+    ReferenceItem(
+      title: "Test Title 01",
+      authors: "Test Author 01",
+    ),
+    ReferenceItem(
+      title: "Test Title 02",
+      authors: "Test Author",
+    ),
+  ];
+
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -353,7 +361,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body:
-        _ExplorerWidget(),
+        _ExplorerWidget(allItems: _allItems,),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _navigateEditRoute(
