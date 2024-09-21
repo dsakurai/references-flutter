@@ -120,6 +120,8 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                   ByteData data = await rootBundle.load("assets/sample.pdf");
                   Uint8List bytes = data.buffer.asUint8List();
 
+                  // Works only for the web app
+
                   final blob = html.Blob([bytes], 'application/pdf');
                   final url  = html.Url.createObjectUrlFromBlob(blob);
 
