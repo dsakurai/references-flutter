@@ -40,6 +40,11 @@ class ReferenceItem {
   String? title;
   String? authors;
 
+  ReferenceItem copy() => ReferenceItem(
+    title: title,
+    authors: authors
+  );
+
   // Generative constor with default param values
   ReferenceItem({this.title, this.authors});
 }
@@ -107,6 +112,33 @@ class _ExplorerWidget extends StatefulWidget {
 
   @override
   _ExplorerState createState() => _ExplorerState();
+}
+
+Future<bool?> _popConfirmationDialog (BuildContext context) async {
+
+  return showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title:   Text('Confirm Exit'),
+        content: Text('Do you really want to go back?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: Text('No')
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+            child: Text('Yes')
+          ),
+        ]
+      );
+    }
+  );
 }
 
 class _ExplorerState extends State<_ExplorerWidget> {
@@ -193,7 +225,22 @@ class _ExplorerState extends State<_ExplorerWidget> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: 
-                                  (context) => ReferenceItemWidget(referenceItem: _filteredItems[index])
+                                  (context) =>
+                                  PopScope(
+                                    canPop: false,
+
+                                    // get user confirmation to pop this widget
+                                    onPopInvokedWithResult: (didPop, result) async {
+                                      if (didPop) { return; } // too late
+
+                                      bool? doPop = await _popConfirmationDialog(context); // ask the user
+                                      if (doPop ?? false) {
+                                        Navigator.of(context).pop(result); // pop
+                                      }
+                                    },
+
+                                    child: ReferenceItemWidget(referenceItem: _filteredItems[index])
+                                  )
                                 )
                               ).then(
                                 (_) { setState(() {}); }  // reload this page after coming back from the page
