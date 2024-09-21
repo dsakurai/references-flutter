@@ -44,7 +44,7 @@ class ReferenceItem
   String? title;
   String? authors;
 
-  ReferenceItem copy() => ReferenceItem(
+  ReferenceItem clone() => ReferenceItem(
     title: title,
     authors: authors
   );
@@ -218,7 +218,7 @@ Future<Navigator?> _navigateEditRoute({
   required BuildContext context,
   }) {
 
-  var itemForEdit   = itemOriginal.copy();
+  var itemForEdit   = itemOriginal.clone();
 
   return Navigator.push(
     context,
