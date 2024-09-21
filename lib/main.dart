@@ -147,6 +147,26 @@ Future<bool?> _popConfirmationDialog (BuildContext context) async {
   );
 }
 
+void _playSafe(ReferenceItem itemOriginal,
+              ReferenceItem itemEdited,
+              context, didPop, result) async {
+
+  if (didPop) {return;} // too late => do nothing
+
+  if (itemEdited != itemOriginal) {
+    // user edited this reference => ask the user
+
+    bool? doAbandon = await _popConfirmationDialog(context); // Abandon the edit? 
+
+    if (!context.mounted) {return;} // Dialog failed => do nothing
+
+    if (doAbandon != true) {return;} // Don't abandon edit
+  }
+
+  Navigator.of(context).pop(result); // Abandon edit (i.e. close the child widget)
+
+}
+
 class _ExplorerState extends State<_ExplorerWidget> {
 
   List<ReferenceItem> _allItems = [
@@ -240,20 +260,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
 
                                     // get user confirmation to pop this widget
                                     onPopInvokedWithResult: (didPop, result) async {
-
-                                      if (didPop) {return;} // too late => do nothing
-
-                                      if (itemEdited != itemOriginal) {
-                                        // user edited this reference => ask the user
-
-                                        bool? doAbandon = await _popConfirmationDialog(context); // Abandon the edit? 
-
-                                        if (!context.mounted) {return;} // Dialog failed => do nothing
-
-                                        if (doAbandon != true) {return;} // Don't abandon edit
-                                      }
-
-                                      Navigator.of(context).pop(result); // Abandon edit (i.e. close the child widget)
+                                      _playSafe(itemOriginal, itemEdited, context, didPop, result);
                                     },
 
                                     child: ReferenceItemWidget(referenceItem: itemEdited)
