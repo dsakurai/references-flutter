@@ -325,7 +325,25 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ReferenceItemWidget(referenceItem: ReferenceItem(),)),
+
+            MaterialPageRoute(
+              builder: (context) { // ReferenceItemWidget(referenceItem: ReferenceItem(),)),
+
+                var newItem = ReferenceItem();
+
+                return PopScope(
+                  canPop: false,
+
+                  // get user confirmation to pop this widget
+                  onPopInvokedWithResult: (didPop, result) async {
+                    if (didPop) {return;} // too late => do nothing
+                    _popIfFine(ReferenceItem(), newItem, context, result);
+                  },
+
+                  child: ReferenceItemWidget(referenceItem: newItem)
+                );
+              }
+            )
           ).then(
             (_){setState(() {});} // reload this page after coming back from the page
           );
