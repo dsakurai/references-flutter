@@ -211,11 +211,10 @@ Future<Navigator?> _navigateEditRoute({
     MaterialPageRoute(builder: 
       (context) =>
       PopScope(
-        canPop: false, // Disable the back button from the system
+        canPop: false, // Take control of the "back" feature managed by the system, like Android back button, iOS back swipe, etc.
 
         // Back is clicked, instead of save!
-        // Before throwing away data,
-        // get user confirmation to pop this widget
+        // Before throwing away data, get user confirmation.
 
         child: ReferenceItemWidget(
           referenceItem: itemForEdit,
