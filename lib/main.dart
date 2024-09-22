@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
-import 'dart:html' as html; // TODO Make it available for desktop? Works only for the web right now.
+import 'dart:html' as html;
+
+import 'ReferenceItem.dart'; // TODO Make it available for desktop? Works only for the web right now.
 
 void main() {
   runApp(const MyApp());
@@ -36,33 +38,6 @@ class MyApp extends StatelessWidget {
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
-  }
-}
-
-class ReferenceItem
- {
-  String title;
-  String authors;
-
-  ReferenceItem clone() => ReferenceItem(
-    title: title,
-    authors: authors
-  );
-
-  void copyPropertiesFrom(ReferenceItem other) {
-    title   = other.title;
-    authors = other.authors;
-  }
-
-  // Generative constor with default param values
-  ReferenceItem({this.title = "", this.authors = ""});
-
-  bool matches(ReferenceItem that) {
-    return 
-      // Strings are immutable, so comparison by object adresses are fine.
-      (title   == that.title) &&
-      (authors == that.authors)
-    ;
   }
 }
 
