@@ -240,8 +240,8 @@ void _popIfFine(
 Future<Navigator?> _navigateEditRoute({
   required ReferenceItem itemOriginal,
   required BuildContext context,
+  required Function? deleteItem, // Delete a new item
   Function? onSave, // Designed for adding a new item
-  Function? deleteItem, // Delete a new item
   }) {
 
   var itemForEdit   = itemOriginal.clone();
@@ -444,7 +444,8 @@ class _MyHomePageState extends State<MyHomePage> {
           _navigateEditRoute( // go to another page
             itemOriginal: newItem,
             context: context,
-            onSave: () { _allItems.add(newItem); }
+            onSave: () { _allItems.add(newItem); },
+            deleteItem: null
           ).then(
             (_){setState((){});} // reload this page after coming back from the page
           );
