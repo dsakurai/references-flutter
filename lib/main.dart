@@ -177,21 +177,6 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
   }
 }
 
-class _ExplorerWidget extends StatefulWidget {
-
-  final List<ReferenceItem> allItems;
-  final Function deleteItem;
-
-  const _ExplorerWidget({
-    super.key,
-    required this.allItems,
-    required this.deleteItem,
-  });
-
-  @override
-  _ExplorerState createState() => _ExplorerState();
-}
-
 Future<bool?> _popConfirmationDialog (BuildContext context) async {
 
   return showDialog<bool>(
@@ -297,6 +282,21 @@ Future<Navigator?> _navigateEditRoute({
       )
     )
   );
+}
+
+class _ExplorerWidget extends StatefulWidget {
+
+  final List<ReferenceItem> allItems;
+  final Function deleteItem;
+
+  const _ExplorerWidget({
+    super.key,
+    required this.allItems,
+    required this.deleteItem,
+  });
+
+  @override
+  _ExplorerState createState() => _ExplorerState();
 }
 
 class _ExplorerState extends State<_ExplorerWidget> {
