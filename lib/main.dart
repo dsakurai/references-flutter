@@ -435,8 +435,7 @@ class _MyHomePageState extends State<MyHomePage> {
           deleteItem: (item) {
             _allItems.remove(item);
             
-            // TODO is this fine?
-            setState(() { });
+            setState(() { }); // TODO is this fine?
           }
           ),
       floatingActionButton: FloatingActionButton(
