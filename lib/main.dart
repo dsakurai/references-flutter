@@ -180,12 +180,12 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
 class _ExplorerWidget extends StatefulWidget {
 
   final List<ReferenceItem> allItems;
-  final Function? deleteItem;
+  final Function deleteItem;
 
   const _ExplorerWidget({
     super.key,
     required this.allItems,
-    this.deleteItem,
+    required this.deleteItem,
   });
 
   @override
@@ -240,7 +240,7 @@ void _popIfFine(
 Future<Navigator?> _navigateEditRoute({
   required ReferenceItem itemOriginal,
   required BuildContext context,
-  required Function? deleteItem, // Delete a new item
+  required Function deleteItem, // Delete a new item
   Function? onSave, // Designed for adding a new item
   }) {
 
@@ -268,7 +268,7 @@ Future<Navigator?> _navigateEditRoute({
             if (onSave != null) {onSave();}
             Navigator.of(context).pop(); // Navigate back to the page before
           },
-          onDeleteButtonPressed: (deleteItem != null)?
+          onDeleteButtonPressed:
             () async {
               final bool? doDelete = await showDialog<bool>(
                 context: context,
@@ -293,7 +293,6 @@ Future<Navigator?> _navigateEditRoute({
                 deleteItem(itemOriginal);
               }
             }
-            : null
         )
       )
     )
@@ -445,7 +444,7 @@ class _MyHomePageState extends State<MyHomePage> {
             itemOriginal: newItem,
             context: context,
             onSave: () { _allItems.add(newItem); },
-            deleteItem: null
+            deleteItem: (item){} // no modification to _allItems is needed
           ).then(
             (_){setState((){});} // reload this page after coming back from the page
           );
