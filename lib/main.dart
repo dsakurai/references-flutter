@@ -71,12 +71,14 @@ class ReferenceItemWidget extends StatefulWidget {
   final ReferenceItem referenceItem;
   final Function onCancelButtonPressed;
   final Function onSaveButtonPressed;
+  final Function? onDeleteButtonPressed;
 
   const ReferenceItemWidget({
     super.key,
     required this.referenceItem,
     required this.onCancelButtonPressed,
     required this.onSaveButtonPressed,
+    this.onDeleteButtonPressed,
   });
 
   @override
@@ -111,6 +113,14 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               },
               child: Text("Save")
             ),
+            // Delete button if requested
+            if (widget.onDeleteButtonPressed case var onDeleteButtonPressed?)
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: (){
+                  onDeleteButtonPressed();
+                }, 
+              ),
             Row(
               children: [
                 Text("Title: "),
@@ -170,10 +180,12 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
 class _ExplorerWidget extends StatefulWidget {
 
   final List<ReferenceItem> allItems;
+  final Function? deleteItem;
 
   const _ExplorerWidget({
     super.key,
-    required this.allItems
+    required this.allItems,
+    this.deleteItem,
   });
 
   @override
@@ -229,6 +241,7 @@ Future<Navigator?> _navigateEditRoute({
   required ReferenceItem itemOriginal,
   required BuildContext context,
   Function? onSave, // Designed for adding a new item
+  Function? deleteItem, // Delete a new item
   }) {
 
   var itemForEdit   = itemOriginal.clone();
@@ -255,7 +268,33 @@ Future<Navigator?> _navigateEditRoute({
             if (onSave != null) {onSave();}
             Navigator.of(context).pop(); // Navigate back to the page before
           },
-          )
+          onDeleteButtonPressed: (deleteItem != null)?
+            () async {
+              final bool? doDelete = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Delete This Item?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {Navigator.of(context).pop(false);},
+                      child: Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {Navigator.of(context).pop(true);},
+                      child: Text('Delete'),
+                    ),
+                  ]
+                )
+              );
+              if (!context.mounted) {return;}
+
+              if (doDelete ?? false) {
+                Navigator.of(context).pop(); // Navigate back to the page before
+                deleteItem(itemOriginal);
+              }
+            }
+            : null
+        )
       )
     )
   );
@@ -322,7 +361,8 @@ class _ExplorerState extends State<_ExplorerWidget> {
                         _navigateEditRoute(
                           itemOriginal: _filteredItems[index],
                           context: context,
-                        ).then(
+                          deleteItem: widget.deleteItem
+                          ).then(
                           (_){setState(() { });} // reload this page after coming back from the page
                         );
                       },
@@ -390,7 +430,15 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body:
-        _ExplorerWidget(allItems: _allItems,),
+        _ExplorerWidget(
+          allItems: _allItems,
+          deleteItem: (item) {
+            _allItems.remove(item);
+            
+            // TODO is this fine?
+            setState(() { });
+          }
+          ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           var newItem = ReferenceItem();
