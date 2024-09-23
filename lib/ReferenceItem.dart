@@ -81,7 +81,7 @@ class DocumentPointer {
 
   // Set the document to null in the database.
   // Useful for a new item that is not in the database yet.
-  DocumentPointer.nullInDataBase()
+  DocumentPointer._nullInDataBase()
       : this._(
         local: Future<LocalBinary>.value(LocalBinary.nullValue()),
         lazyLoad: null
@@ -120,7 +120,7 @@ class ReferenceItem {
   ReferenceItem({
     this.title = "",
     this.authors = "",
-  }) : documentPointer = DocumentPointer.nullInDataBase();
+  }) : documentPointer = DocumentPointer._nullInDataBase();
 
   ReferenceItem.withLazyLoad({
     this.title = "",
