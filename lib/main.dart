@@ -366,9 +366,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-
-  List<ReferenceItem> _allItems = [
+List<ReferenceItem> initializeReference() {
+  return [
     ReferenceItem(
       title: "Test Title",
       authors: "Test Author",
@@ -382,7 +381,11 @@ class _MyHomePageState extends State<MyHomePage> {
       authors: "Test Author",
     ),
   ];
+}
 
+class _MyHomePageState extends State<MyHomePage> {
+
+  List<ReferenceItem> _loadedItems = initializeReference();
 
   @override
   Widget build(BuildContext context) {
@@ -404,9 +407,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body:
         _ExplorerWidget(
-          allItems: _allItems,
+          allItems: _loadedItems,
           deleteItem: (item) {
-            _allItems.remove(item);
+            _loadedItems.remove(item);
             
             setState(() { }); // TODO is this fine?
           }
@@ -418,7 +421,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _navigateEditRoute( // go to another page
             itemOriginal: newItem,
             context: context,
-            onSave: () { _allItems.add(newItem); },
+            onSave: () { _loadedItems.add(newItem); },
             deleteItem: (item){} // no modification to _allItems is needed
           ).then(
             (_){setState((){});} // reload this page after coming back from the page
