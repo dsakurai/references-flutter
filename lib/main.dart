@@ -127,9 +127,14 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
             TextButton(
               onPressed: () async {
                 try {
+
                   // Load PDF
                   ByteData data = await rootBundle.load("assets/sample.pdf");
-                  Uint8List bytes = data.buffer.asUint8List();
+                  ByteBuffer buffer = data.buffer;
+
+                  // widget.referenceItem.documentPointer.
+
+                  Uint8List bytes = buffer.asUint8List();
 
                   // Works only for the web app
 
@@ -367,10 +372,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 Future<List<ReferenceItem>> initializeReference() async {
+
+
+  Future<ByteData> futurePdf = rootBundle.load("assets/sample.pdf");
+
+  // Maybe we should get rid of await here for performance? Probably not overhead; not sure.
+  ByteData pdf = await futurePdf;
+  ByteBuffer pdfBuffer = pdf.buffer;
+  final futurePdfBuffer = Future<ByteBuffer>.value(pdfBuffer);
+
   return [
     Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title",
       authors: "Test Author",
+      documentPointer: DocumentPointer(
+        local: LocalBinary(byteBuffer: futurePdfBuffer)
+      )
     )),
     Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title 01",

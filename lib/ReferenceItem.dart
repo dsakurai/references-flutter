@@ -14,6 +14,8 @@ class LocalBinary {
     required Future<ByteBuffer?> byteBuffer
   }): _byteBuffer = byteBuffer;
 
+  LocalBinary.nullValue(
+  ): _byteBuffer = Future<ByteBuffer?>.value(null);
 }
 
 class DocumentPointer {
@@ -27,6 +29,17 @@ class DocumentPointer {
   void setUserSpecifiedBinary(LocalBinary binary) {
     _userChangedBinary = true;
     _local = binary;
+  }
+
+  Future<LocalBinary> get local async {
+
+    // Return if non null
+    if (_local case var loc?) { return loc; }
+
+    throw UnimplementedError("Downloading from the database is not implemented yet.");
+
+    // _local = await download();
+    // return _local;
   }
 
 
@@ -57,30 +70,26 @@ class ReferenceItem {
   String authors;
   DocumentPointer documentPointer; // the actual binary might not be fetched from the database
 
-  ReferenceItem clone() => ReferenceItem._(
-      title: title,
-      authors: authors,
-      documentPointer: documentPointer.clone() // although a clone, the binary points at the same blob instance (stored locally or in the database).
-      );
+  ReferenceItem clone() {
+    ReferenceItem c = ReferenceItem();
+    c.copyPropertiesFrom(this);
+    return c;
+  }
 
   void copyPropertiesFrom(ReferenceItem other) {
     title = other.title;
     authors = other.authors;
+    documentPointer = documentPointer.clone();  // although a clone, the binary points at the same blob instance (stored locally or in the database).
   }
 
-  ReferenceItem._({
-    this.title = "",
-    this.authors = "",
-    required this.documentPointer
-  });
-
-  ReferenceItem({title = "",
-                 authors = "",
-  }): this._(
-    title: title,
-    authors: authors,
-    documentPointer: DocumentPointer(local: null),
-  );
+  ReferenceItem({this.title = "",
+                 this.authors = "",
+                 DocumentPointer? documentPointer = null // If un-specified, we will create a database entry whose document blob is A null (not only locally, but also in the database).
+  }):
+    this.documentPointer = documentPointer?? DocumentPointer(
+      local: LocalBinary.nullValue()
+    )
+  ;
 
   bool userMadeAChange(ReferenceItem original) {
 
