@@ -71,9 +71,13 @@ class DocumentPointer {
      _lazyLoad = lazyLoad
     ;
 
+  // Constructor
   DocumentPointer.lazyLoad({
     required FunctionLoadBinary func
-  }):  this._lazyLoad = func;
+  }): this._(
+    local: null,
+    lazyLoad: func
+  );
 
   // TODO remove this.
   //
