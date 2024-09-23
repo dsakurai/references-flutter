@@ -91,7 +91,7 @@ class ReferenceItem {
   void copyPropertiesFrom(ReferenceItem other) {
     title = other.title;
     authors = other.authors;
-    documentPointer = documentPointer.clone();  // although a clone, the binary points at the same blob instance (stored locally or in the database).
+    documentPointer = other.documentPointer.clone();  // although a clone, the binary points at the same blob instance (stored locally or in the database).
   }
 
   ReferenceItem({this.title = "",
