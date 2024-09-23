@@ -385,7 +385,7 @@ Future<List<ReferenceItem>> initializeReference() async {
     Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title",
       authors: "Test Author",
-      documentPointer: DocumentPointer(
+      documentPointer: DocumentPointer.testData(
         local: Future<LocalBinary>.value(LocalBinary(byteBuffer: pdfBuffer))
       )
     )),

@@ -48,15 +48,31 @@ class DocumentPointer {
   // Document binary is stored locally. Might also be stored in the database.
   bool get storedLocally { return _local != null; }
 
-  DocumentPointer({
+  DocumentPointer._({
     required Future<LocalBinary>? local
-  }):
-    _local = local
+  }): _local = local
   ;
+
+  // TODO remove this.
+  // 
+  // Not for production.
+  // A quick hack for creating a sample version. 
+  //
+  // To be replaced with a database mock.
+  DocumentPointer.testData({
+    required Future<LocalBinary>? local
+  }): this._(local: local);
+
+  // Set the document to null in the database.
+  // Useful for a new item that is not in the database yet.
+  DocumentPointer.nullInDataBase(): this._(
+      local: Future<LocalBinary>.value(LocalBinary.nullValue())
+  );
+
 
   // Used for generating a temporary reference item that can be edited by the user.
   // The copied item can be removed if the user does not edit the record.
-  DocumentPointer clone() => DocumentPointer(
+  DocumentPointer clone() => DocumentPointer._(
     local: this._local // point at the same local binary.
   );
 }
@@ -82,10 +98,7 @@ class ReferenceItem {
                  this.authors = "",
                  DocumentPointer? documentPointer = null // If un-specified, we will create a database entry whose document blob is A null (not only locally, but also in the database).
   }):
-    this.documentPointer = documentPointer?? DocumentPointer(
-      local: Future<LocalBinary>.value(LocalBinary.nullValue())
-    )
-  ;
+    this.documentPointer = documentPointer?? DocumentPointer.nullInDataBase();
 
   bool userMadeAChange(ReferenceItem original) {
 
