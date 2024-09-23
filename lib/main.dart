@@ -366,7 +366,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-Future<List<ReferenceItem>> initializeReference() {
+Future<List<ReferenceItem>> initializeReference() async {
   return [
     Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title",
