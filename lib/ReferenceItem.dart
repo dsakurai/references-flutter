@@ -79,15 +79,6 @@ class DocumentPointer {
     lazyLoad: func
   );
 
-  // TODO remove this.
-  //
-  // Not for production.
-  // A quick hack for creating a sample version.
-  //
-  // To be replaced with a database mock.
-  DocumentPointer.testData({required Future<LocalBinary>? local})
-      : this._(local: local, lazyLoad: null);
-
   // Set the document to null in the database.
   // Useful for a new item that is not in the database yet.
   DocumentPointer.nullInDataBase()
