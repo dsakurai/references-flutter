@@ -385,7 +385,7 @@ List<ReferenceItem> initializeReference() {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  List<ReferenceItem> _loadedItems = initializeReference();
+  List<ReferenceItem> _allItems = initializeReference();
 
   @override
   Widget build(BuildContext context) {
@@ -407,9 +407,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body:
         _ExplorerWidget(
-          allItems: _loadedItems,
+          allItems: _allItems,
           deleteItem: (item) {
-            _loadedItems.remove(item);
+            _allItems.remove(item);
             
             setState(() { }); // TODO is this fine?
           }
@@ -421,7 +421,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _navigateEditRoute( // go to another page
             itemOriginal: newItem,
             context: context,
-            onSave: () { _loadedItems.add(newItem); },
+            onSave: () { _allItems.add(newItem); },
             deleteItem: (item){} // no modification to _allItems is needed
           ).then(
             (_){setState((){});} // reload this page after coming back from the page
