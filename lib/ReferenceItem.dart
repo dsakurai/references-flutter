@@ -98,7 +98,8 @@ class DocumentPointer {
 
   // Used for generating a temporary reference item that can be edited by the user.
   // The copied item can be removed if the user does not edit the record.
-  DocumentPointer clone() =>
+  // Not meant to be used by the user of this file, at least for now.
+  DocumentPointer _clone() =>
       DocumentPointer._(
         local: this._local, // point at the same local binary.
         lazyLoad: this._lazyLoad
@@ -122,7 +123,7 @@ class ReferenceItem {
     title = other.title;
     authors = other.authors;
     documentPointer = other.documentPointer
-        .clone(); // although a clone, the binary points at the same blob instance (stored locally or in the database).
+        ._clone(); // although a clone, the binary points at the same blob instance (stored locally or in the database).
   }
 
   ReferenceItem({
