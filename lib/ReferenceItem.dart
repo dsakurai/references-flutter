@@ -16,8 +16,7 @@ class LocalBinary {
     required ByteBuffer? byteBuffer
   }): _byteBuffer = byteBuffer;
 
-  LocalBinary.nullValue(
-  ): _byteBuffer = null;
+  LocalBinary.nullValue(): this(byteBuffer: null);
 }
 
 class DocumentPointer {
