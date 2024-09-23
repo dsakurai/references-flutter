@@ -24,6 +24,7 @@ class LocalBinary {
 typedef FunctionLoadBinary = Future<LocalBinary> Function();
 
 class DocumentPointer {
+
   // null indicates that data is not downloaded from the database because there has been no request from the user.
   // The local binary of a PDF (or powerpoint etc.) can be updated, in which case this LocalBinary instance is replaced with a newly constructed one.
   Future<LocalBinary>?
@@ -31,23 +32,36 @@ class DocumentPointer {
 
   FunctionLoadBinary? _lazyLoad;
 
+  void sanityCheck() {
+      // If the document is stored remotely, the lazy loading function must be available.
+      if (_local == null && _lazyLoad == null) throw Exception("Warning: local and lazyLoad are both null.");
+
+      // Below should not go into sanity check because after a download happens (i.e. local data is non-null), lazyLoading function can still be non-null.
+      // if (_local != null && _lazyLoad != null) { throw Exception("Error: local and lazyLoad are both set."); }
+  }
+
   bool _userChangedBinary = false;
   bool userMadeAChange() {
     return _userChangedBinary;
   }
 
   void setUserSpecifiedBinary(LocalBinary binary) {
+    sanityCheck(); // This is technically not a problem, but is not intended. Might capture a future bug.
+
     _userChangedBinary = true;
+
+    _lazyLoad = null;
     _local = Future<LocalBinary>.value(binary);
   }
 
-  Future<LocalBinary> get local async {
-
+  Future<LocalBinary> get local async { sanityCheck();
+    // Document is locally available? 
     if (_local case var loc?) {
-      return loc;
-    } else {
+      return loc; // yes => return
 
-      // Load the binary
+    } else { // => download document
+
+      // lazy-loading function for downloading is set?
       if (this._lazyLoad case var load?) {
         Future<LocalBinary> binary = load();
         _local = binary;
@@ -63,18 +77,21 @@ class DocumentPointer {
     return _local != null;
   }
 
-  DocumentPointer._({
+  // Only meant for delegation
+  DocumentPointer._delegationOnly({
     required Future<LocalBinary>? local,
     required FunctionLoadBinary?  lazyLoad,
     }) :
-     _local      = local,
+     _local    = local,
      _lazyLoad = lazyLoad
-    ;
+    {
+      sanityCheck();
+    }
 
   // Constructor
   DocumentPointer._withLazyLoad({
     required FunctionLoadBinary func
-  }): this._(
+  }): this._delegationOnly(
     local: null,
     lazyLoad: func
   );
@@ -82,7 +99,7 @@ class DocumentPointer {
   // Set the document to null in the database.
   // Useful for a new item that is not in the database yet.
   DocumentPointer._nullInDataBase()
-      : this._(
+      : this._delegationOnly(
         local: Future<LocalBinary>.value(LocalBinary.nullValue()),
         lazyLoad: null
         );
@@ -91,7 +108,7 @@ class DocumentPointer {
   // The copied item can be removed if the user does not edit the record.
   // Not meant to be used by the user of this file, at least for now.
   DocumentPointer _clone() =>
-      DocumentPointer._(
+      DocumentPointer._delegationOnly(
         local: this._local, // point at the same local binary.
         lazyLoad: this._lazyLoad
       )
