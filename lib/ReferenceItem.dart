@@ -148,6 +148,11 @@ class ReferenceItem {
 
   bool userMadeAChange(ReferenceItem original) {
 
+    // TODO add id for the database key
+    // if (id != original.id) {
+    //   throw Exception("id has changed!");
+    // } // we do not intend to let the user set the id.
+
     // Rule of thumb: compare by values
     return
         // Strings can be compared by their values in this manner
