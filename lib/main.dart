@@ -380,12 +380,10 @@ Future<List<ReferenceItem>> initializeReference() async {
   ByteBuffer pdfBuffer = pdf.buffer;
 
   return [
-    Future<ReferenceItem>.value(ReferenceItem(
+    Future<ReferenceItem>.value(ReferenceItem.withLazyLoad(
       title: "Test Title",
       authors: "Test Author",
-      documentPointer: DocumentPointer.testData(
-        local: Future<LocalBinary>.value(LocalBinary(byteBuffer: pdfBuffer))
-      )
+      lazyLoad: () => Future<LocalBinary>.value(LocalBinary(byteBuffer: pdfBuffer))
     )),
     Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title 01",
