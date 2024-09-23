@@ -100,6 +100,8 @@ class ReferenceItem {
 
   ReferenceItem({this.title = "",
                  this.authors = "",
+
+                 // TODO Remove this because we should load the document from the database or user upload, which does not make use of this keyword. It should use a separate method of DocumentPointer.
                  DocumentPointer? documentPointer = null // If un-specified, we will create a database entry whose document blob is A null (not only locally, but also in the database).
   }):
     this.documentPointer = documentPointer?? DocumentPointer.nullInDataBase();
