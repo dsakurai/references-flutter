@@ -132,7 +132,8 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                   ByteData data = await rootBundle.load("assets/sample.pdf");
                   ByteBuffer buffer = data.buffer;
 
-                  // widget.referenceItem.documentPointer.
+                  // LocalBinary localBinary = await widget.referenceItem.documentPointer.local;
+                  // ByteBuffer? buffer = localBinary.
 
                   Uint8List bytes = buffer.asUint8List();
 
@@ -379,14 +380,13 @@ Future<List<ReferenceItem>> initializeReference() async {
   // Maybe we should get rid of await here for performance? Probably not overhead; not sure.
   ByteData pdf = await futurePdf;
   ByteBuffer pdfBuffer = pdf.buffer;
-  final futurePdfBuffer = Future<ByteBuffer>.value(pdfBuffer);
 
   return [
     Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title",
       authors: "Test Author",
       documentPointer: DocumentPointer(
-        local: LocalBinary(byteBuffer: futurePdfBuffer)
+        local: Future<LocalBinary>.value(LocalBinary(byteBuffer: pdfBuffer))
       )
     )),
     Future<ReferenceItem>.value(ReferenceItem(

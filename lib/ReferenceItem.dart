@@ -1,34 +1,36 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
+
+@immutable
 class LocalBinary {
 
   // null indicates that the blob is null in the database
-  Future<ByteBuffer?> _byteBuffer;
+  final ByteBuffer? _byteBuffer;
 
-  Future<bool> isNullInDatabase () async {
-    final ByteBuffer? b = await _byteBuffer;
-    return b == null;
+  bool isNullInDatabase () {
+    return _byteBuffer == null;
   }
 
   LocalBinary({
-    required Future<ByteBuffer?> byteBuffer
+    required ByteBuffer? byteBuffer
   }): _byteBuffer = byteBuffer;
 
   LocalBinary.nullValue(
-  ): _byteBuffer = Future<ByteBuffer?>.value(null);
+  ): _byteBuffer = null;
 }
 
 class DocumentPointer {
 
-  // null indicates that data is not downloaded from the database.
+  // null indicates that data is not downloaded from the database because there has been no request from the user.
   // The local binary of a PDF (or powerpoint etc.) can be updated, in which case this LocalBinary instance is replaced with a newly constructed one.
-  LocalBinary? _local; // Note: if the actual blob is null in the database but is already locally stored (as a null value), `_local` is non-null.
+  Future<LocalBinary>? _local; // Note: if the actual blob is null in the database but is already locally stored (as a null value), `_local` is non-null.
 
   bool _userChangedBinary = false;
 
   void setUserSpecifiedBinary(LocalBinary binary) {
     _userChangedBinary = true;
-    _local = binary;
+    _local = Future<LocalBinary>.value(binary);
   }
 
   Future<LocalBinary> get local async {
@@ -53,7 +55,7 @@ class DocumentPointer {
   }
 
   DocumentPointer({
-    LocalBinary? local
+    required Future<LocalBinary>? local
   }):
     _local = local
   ;
@@ -87,7 +89,7 @@ class ReferenceItem {
                  DocumentPointer? documentPointer = null // If un-specified, we will create a database entry whose document blob is A null (not only locally, but also in the database).
   }):
     this.documentPointer = documentPointer?? DocumentPointer(
-      local: LocalBinary.nullValue()
+      local: Future<LocalBinary>.value(LocalBinary.nullValue())
     )
   ;
 
