@@ -88,7 +88,7 @@ class ReferenceItem {
     return
         // Strings can be compared by their values in this manner
            (title != original.title)
-        || (authors == original.authors)
+        || (authors != original.authors)
         || documentPointer.userMadeAChange();
   }
 }
