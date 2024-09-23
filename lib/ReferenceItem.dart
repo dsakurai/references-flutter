@@ -8,6 +8,11 @@ class LocalBinary {
   // null indicates that the blob is null in the database
   final ByteBuffer? _byteBuffer;
 
+  // Do not change the properties of byteBuffer!
+  ByteBuffer? get byteBuffer {
+    return _byteBuffer;
+  }
+
   bool isNullInDatabase () {
     return _byteBuffer == null;
   }

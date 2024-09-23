@@ -129,22 +129,20 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                 try {
 
                   // Load PDF
-                  ByteData data = await rootBundle.load("assets/sample.pdf");
-                  ByteBuffer buffer = data.buffer;
 
-                  // LocalBinary localBinary = await widget.referenceItem.documentPointer.local;
-                  // ByteBuffer? buffer = localBinary.
+                  LocalBinary localBinary = await widget.referenceItem.documentPointer.local;
 
-                  Uint8List bytes = buffer.asUint8List();
+                  if (localBinary.byteBuffer case var buffer?) {
+                    Uint8List bytes = buffer.asUint8List();
 
-                  // Works only for the web app
+                    // Works only for the web app
+                    final blob = html.Blob([bytes], 'application/pdf');
+                    final url  = html.Url.createObjectUrlFromBlob(blob);
 
-                  final blob = html.Blob([bytes], 'application/pdf');
-                  final url  = html.Url.createObjectUrlFromBlob(blob);
+                    html.window.open(url, "_blank"); // Open in new tab
 
-                  html.window.open(url, "_blank"); // Open in new tab
-
-                  html.Url.revokeObjectUrl(url); // Free the memory
+                    html.Url.revokeObjectUrl(url); // Free the memory
+                  }
                 } catch (e) {
                   print("Error loading PDF: $e");
                 }
