@@ -27,6 +27,7 @@ class DocumentPointer {
   Future<LocalBinary>? _local; // Note: if the actual blob is null in the database but is already locally stored (as a null value), `_local` is non-null.
 
   bool _userChangedBinary = false;
+  bool userMadeAChange() { return _userChangedBinary; }
 
   void setUserSpecifiedBinary(LocalBinary binary) {
     _userChangedBinary = true;
@@ -44,15 +45,8 @@ class DocumentPointer {
     // return _local;
   }
 
-
-  bool userMadeAChange() {
-    return _userChangedBinary;
-  }
-
   // Document binary is stored locally. Might also be stored in the database.
-  bool get storedLocally {
-    return _local != null;
-  }
+  bool get storedLocally { return _local != null; }
 
   DocumentPointer({
     required Future<LocalBinary>? local
