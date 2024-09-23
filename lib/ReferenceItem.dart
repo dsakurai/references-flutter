@@ -72,7 +72,7 @@ class DocumentPointer {
     ;
 
   // Constructor
-  DocumentPointer.lazyLoad({
+  DocumentPointer._withLazyLoad({
     required FunctionLoadBinary func
   }): this._(
     local: null,
@@ -126,7 +126,7 @@ class ReferenceItem {
     this.title = "",
     this.authors = "",
     required FunctionLoadBinary lazyLoad,
-  }) : documentPointer = DocumentPointer.lazyLoad(func: lazyLoad)
+  }) : documentPointer = DocumentPointer._withLazyLoad(func: lazyLoad)
   ;
 
   bool userMadeAChange(ReferenceItem original) {
