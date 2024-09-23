@@ -184,8 +184,8 @@ void _popIfFine(
   ReferenceItem itemEdited,
   context) async {
 
-  if (! itemEdited.matches(itemOriginal)) {
-    // user edited this reference => ask the user
+  if (itemEdited.userMadeAChange(itemOriginal)) {
+    // user edited this reference => ask the user before closing the page
 
     bool? doAbandon = await _popConfirmationDialog(context); // Abandon the edit? 
 
@@ -372,17 +372,14 @@ class _MyHomePageState extends State<MyHomePage> {
     ReferenceItem(
       title: "Test Title",
       authors: "Test Author",
-      documentPointer: DocumentPointer(local: null)
     ),
     ReferenceItem(
       title: "Test Title 01",
       authors: "Test Author 01",
-      documentPointer: DocumentPointer(local: null)
     ),
     ReferenceItem(
       title: "Test Title 02",
       authors: "Test Author",
-      documentPointer: DocumentPointer(local: null)
     ),
   ];
 
@@ -416,9 +413,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          var newItem = ReferenceItem(
-            documentPointer: DocumentPointer(local: null)
-          );
+          var newItem = ReferenceItem();
+
           _navigateEditRoute( // go to another page
             itemOriginal: newItem,
             context: context,
