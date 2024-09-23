@@ -366,26 +366,28 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-List<ReferenceItem> initializeReference() {
+Future<List<ReferenceItem>> initializeReference() {
   return [
-    ReferenceItem(
+    Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title",
       authors: "Test Author",
-    ),
-    ReferenceItem(
+    )),
+    Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title 01",
       authors: "Test Author 01",
-    ),
-    ReferenceItem(
+    )),
+    Future<ReferenceItem>.value(ReferenceItem(
       title: "Test Title 02",
       authors: "Test Author",
-    ),
-  ];
+    )),
+  ].wait;
 }
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  List<ReferenceItem> _allItems = initializeReference();
+  final Future<List<ReferenceItem>> futureItems = initializeReference(); // don't re-generate this stream. 
+
+  List<ReferenceItem> _allItems = [];
 
   @override
   Widget build(BuildContext context) {
@@ -406,14 +408,35 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body:
-        _ExplorerWidget(
-          allItems: _allItems,
-          deleteItem: (item) {
-            _allItems.remove(item);
-            
-            setState(() { }); // TODO is this fine?
+        FutureBuilder<List<ReferenceItem>>(
+          future: futureItems,  // don't generate the stream where the widget can be re-rendered
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            }
+
+            if (snapshot.hasData) {
+              if (snapshot.data case var data?) {
+                _allItems = data;
+                return _ExplorerWidget(
+                          allItems: _allItems,
+                          deleteItem: (item) {
+                            _allItems.remove(item);
+                            
+                            setState(() { }); // TODO is this fine?
+                          }
+                );
+              }
+              return Center(child: Text('Unexpected: Data is null.'));
+            }
+
+            return Center(child: Text('No data available'));
           }
-          ),
+        ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           var newItem = ReferenceItem();
