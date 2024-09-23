@@ -372,14 +372,17 @@ class _MyHomePageState extends State<MyHomePage> {
     ReferenceItem(
       title: "Test Title",
       authors: "Test Author",
+      documentPointer: DocumentPointer(local: null)
     ),
     ReferenceItem(
       title: "Test Title 01",
       authors: "Test Author 01",
+      documentPointer: DocumentPointer(local: null)
     ),
     ReferenceItem(
       title: "Test Title 02",
       authors: "Test Author",
+      documentPointer: DocumentPointer(local: null)
     ),
   ];
 
@@ -413,7 +416,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          var newItem = ReferenceItem();
+          var newItem = ReferenceItem(
+            documentPointer: DocumentPointer(local: null)
+          );
           _navigateEditRoute( // go to another page
             itemOriginal: newItem,
             context: context,
