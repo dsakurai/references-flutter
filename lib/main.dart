@@ -385,11 +385,11 @@ Future<List<ReferenceItem>> initializeReference() async {
       authors: "Test Author",
       lazyLoad: () => Future<LocalBinary>.value(LocalBinary(byteBuffer: pdfBuffer))
     )),
-    Future<ReferenceItem>.value(ReferenceItem(
+    Future<ReferenceItem>.value(ReferenceItem.emptyItem(
       title: "Test Title 01",
       authors: "Test Author 01",
     )),
-    Future<ReferenceItem>.value(ReferenceItem(
+    Future<ReferenceItem>.value(ReferenceItem.emptyItem(
       title: "Test Title 02",
       authors: "Test Author",
     )),
@@ -452,7 +452,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          var newItem = ReferenceItem();
+          var newItem = ReferenceItem.emptyItem();
 
           _navigateEditRoute( // go to another page
             itemOriginal: newItem,

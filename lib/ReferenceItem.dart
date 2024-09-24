@@ -122,7 +122,7 @@ class ReferenceItem {
       documentPointer; // the actual binary might not be fetched from the database
 
   ReferenceItem clone() {
-    ReferenceItem c = ReferenceItem();
+    ReferenceItem c = ReferenceItem.emptyItem();
     c.copyPropertiesFrom(this);
     return c;
   }
@@ -134,7 +134,7 @@ class ReferenceItem {
         ._clone(); // although a clone, the binary points at the same blob instance (stored locally or in the database).
   }
 
-  ReferenceItem({
+  ReferenceItem.emptyItem({
     this.title = "",
     this.authors = "",
   }) : documentPointer = DocumentPointer._nullInDataBase();
@@ -148,8 +148,8 @@ class ReferenceItem {
 
   bool userMadeAChange(ReferenceItem original) {
 
-    // TODO add id for the database key
-    // if (id != original.id) {
+    // ERROR //  TODO add id for the database key
+    // if (this.id != original.id) {
     //   throw Exception("id has changed!");
     // } // we do not intend to let the user set the id.
 
