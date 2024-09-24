@@ -119,8 +119,11 @@ class ReferenceItem {
   int? id; // Note: items in the database SHOULD have an ID.
   String title;
   String authors;
-  DocumentPointer
-      documentPointer; // the actual binary might not be fetched from the database
+  DocumentPointer _documentPointer; // the actual binary might not be fetched from the database
+
+  DocumentPointer get documentPointer {
+    return _documentPointer;
+  }
 
   ReferenceItem clone() {
     ReferenceItem c = ReferenceItem.emptyItem();
@@ -131,7 +134,7 @@ class ReferenceItem {
   void copyPropertiesFrom(ReferenceItem other) {
     title = other.title;
     authors = other.authors;
-    documentPointer = other.documentPointer
+    _documentPointer = other.documentPointer
         ._clone(); // although a clone, the binary points at the same blob instance (stored locally or in the database).
   }
 
@@ -139,14 +142,14 @@ class ReferenceItem {
     this.id = null,
     this.title = "",
     this.authors = "",
-  }) : documentPointer = DocumentPointer._nullInDataBase();
+  }) : _documentPointer = DocumentPointer._nullInDataBase();
 
   ReferenceItem.withLazyLoad({
     this.id = null,
     this.title = "",
     this.authors = "",
     required FunctionLoadBinary lazyLoad,
-  }) : documentPointer = DocumentPointer._withLazyLoad(func: lazyLoad)
+  }) : _documentPointer = DocumentPointer._withLazyLoad(func: lazyLoad)
   ;
 
   bool userMadeAChange(ReferenceItem original) {
