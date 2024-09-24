@@ -132,7 +132,7 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
 
                   LocalBinary localBinary = await widget.referenceItem.documentPointer.local;
 
-                  if (localBinary.byteBuffer case var buffer?) {
+                  if (localBinary.byteBuffer case ByteBuffer buffer?) {
                     Uint8List bytes = buffer.asUint8List();
 
                     // Works only for the web app
@@ -148,7 +148,40 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                 }
               },
               child: Text("Show PDF")
-            )
+            ),
+
+            TextButton(
+              child: Text("Upload PDF"),
+              onPressed: () async {
+
+                html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+                uploadInput.accept = '.pdf';
+                uploadInput.multiple = false; // I guess we can restrict the upload to one file with this.
+                uploadInput.click();
+
+                uploadInput.onChange.listen( (event) async {
+                  final files = uploadInput.files;
+                  if (files == null) {return;}
+                  if (files.isNotEmpty) {
+                    final file   = files[0];
+
+                    final reader = html.FileReader();
+
+                    reader.readAsArrayBuffer(file);
+                    await reader.onLoad.first;
+                    setState(() {
+                      Uint8List list = reader.result as Uint8List;
+                      ByteBuffer buffer = list.buffer;
+
+                      this.widget.referenceItem.documentPointer
+                          .setUserSpecifiedBinary(LocalBinary(byteBuffer: buffer));
+                    });
+
+                  }
+
+                },);
+              },
+            ),
           ]
         )
       )
