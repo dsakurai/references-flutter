@@ -116,6 +116,7 @@ class DocumentPointer {
 }
 
 class ReferenceItem {
+  int? id; // Note: items in the database SHOULD have an ID.
   String title;
   String authors;
   DocumentPointer
@@ -135,11 +136,13 @@ class ReferenceItem {
   }
 
   ReferenceItem.emptyItem({
+    this.id = null,
     this.title = "",
     this.authors = "",
   }) : documentPointer = DocumentPointer._nullInDataBase();
 
   ReferenceItem.withLazyLoad({
+    this.id = null,
     this.title = "",
     this.authors = "",
     required FunctionLoadBinary lazyLoad,
@@ -148,10 +151,9 @@ class ReferenceItem {
 
   bool userMadeAChange(ReferenceItem original) {
 
-    // ERROR //  TODO add id for the database key
-    // if (this.id != original.id) {
-    //   throw Exception("id has changed!");
-    // } // we do not intend to let the user set the id.
+    if (this.id != original.id) {
+      throw Exception("ID differs! User made a change on the ID?");
+    } // we do not intend to let the user set the id.
 
     // Rule of thumb: compare by values
     return
