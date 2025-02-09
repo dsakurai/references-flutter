@@ -7,19 +7,22 @@
         {
             "name": "references_frontend",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "cwd": "${workspaceFolder}/frontend"
         },
         {
             "name": "references_frontend (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "cwd": "${workspaceFolder}/frontend"
         },
         {
             "name": "references_frontend (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "cwd": "${workspaceFolder}/frontend"
         }
     ]
 }
