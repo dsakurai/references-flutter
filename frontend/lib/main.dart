@@ -301,7 +301,6 @@ class _ExplorerWidget extends StatefulWidget {
   final Function deleteItem;
 
   const _ExplorerWidget({
-    super.key,
     required this.allItems,
     required this.deleteItem,
   });
