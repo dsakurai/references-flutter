@@ -166,10 +166,10 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                   final jsData = await js_util.promiseToFuture(jsPromise);
 
                   // Extract data using js_util.getProperty
-                  final String name = js_util.getProperty<String>(jsData, 'name');
-                  final int size = js_util.getProperty<int>(jsData, 'size');
                   final String type = js_util.getProperty<String>(jsData, 'type');
                   final List<dynamic> jsBytes = js_util.getProperty<List<dynamic>>(jsData, 'data');
+                  // final String name = js_util.getProperty<String>(jsData, 'name');
+                  // final int size = js_util.getProperty<int>(jsData, 'size');
 
                   if (type != "application/pdf") {
                     print("File is not PDF.");
