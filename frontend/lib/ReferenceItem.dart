@@ -106,8 +106,8 @@ class DocumentPointer {
         );
 
   // Used for generating a temporary reference item that can be edited by the user.
-  // The copied item can be removed if the user does not edit the record.
-  // Not meant to be used by the user of this file, at least for now.
+  // The copied item can be removed if the user does not save the edit.
+  // Meant to be used only internally, within this source file.
   DocumentPointer _clone() =>
       DocumentPointer._delegationOnly(
         local: this._local, // point at the same local binary.
