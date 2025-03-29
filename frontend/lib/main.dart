@@ -180,7 +180,6 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                   final Uint8List bytes = Uint8List.fromList(jsBytes.cast<int>());
 
                   setState(() {
-                    // _fileName = fileName;
                     final ByteBuffer buffer = bytes.buffer;
 
                     this.widget.referenceItem.documentPointer
