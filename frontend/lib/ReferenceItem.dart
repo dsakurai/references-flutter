@@ -56,13 +56,14 @@ class DocumentPointer {
 
   Future<LocalBinary> get local async { sanityCheck();
     // Document is locally available? 
-    if (_local case var loc?) {
-      return loc; // yes => return
+    if (_local != null) {
+      return _local!; // yes => return
 
     } else { // => download document
 
       // lazy-loading function for downloading is set?
-      if (this._lazyLoad case var load?) {
+      final load = this._lazyLoad;
+      if (load != null) {
         Future<LocalBinary> binary = load();
         _local = binary;
         return binary;

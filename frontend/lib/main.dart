@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
+import 'package:js/js_util.dart' as js_util;
 import 'dart:typed_data';
-import 'dart:html' as html;
 
 import 'ReferenceItem.dart'; // TODO Make it available for desktop? Works only for the web right now.
 
 void main() {
   runApp(const MyApp());
 }
+
+// Import a custom JavaScript function
+@JS('pickFile')
+external JSObject pickFile();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -46,14 +53,14 @@ class ReferenceItemWidget extends StatefulWidget {
   final ReferenceItem referenceItem;
   final Function onCancelButtonPressed;
   final Function onSaveButtonPressed;
-  final Function? onDeleteButtonPressed;
+  final Function onDeleteButtonPressed;
 
   const ReferenceItemWidget({
     super.key,
     required this.referenceItem,
     required this.onCancelButtonPressed,
     required this.onSaveButtonPressed,
-    this.onDeleteButtonPressed,
+    required this.onDeleteButtonPressed,
   });
 
   @override
@@ -89,11 +96,10 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               child: Text("Save")
             ),
             // Delete button if requested
-            if (widget.onDeleteButtonPressed case var onDeleteButtonPressed?)
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: (){
-                  onDeleteButtonPressed();
+                  widget.onDeleteButtonPressed();
                 }, 
               ),
             Row(
@@ -125,23 +131,24 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               ]
             ),
             TextButton(
-              onPressed: () async {
+              onPressed: () async { // Load remote PDF
                 try {
 
-                  // Load PDF
-
+                  // Get the PDF
                   LocalBinary localBinary = await widget.referenceItem.documentPointer.local;
+                  ByteBuffer? buffer = localBinary.byteBuffer;
 
-                  if (localBinary.byteBuffer case ByteBuffer buffer?) {
+                  if (buffer != null) {
                     Uint8List bytes = buffer.asUint8List();
 
-                    // Works only for the web app
-                    final blob = html.Blob([bytes], 'application/pdf');
-                    final url  = html.Url.createObjectUrlFromBlob(blob);
+                    // Only for web platform
+                    final blob = web.Blob([bytes.toJS].toJS, web.BlobPropertyBag(type: 'application/pdf'));
+                    //
+                    final url  = web.URL.createObjectURL(blob);
 
-                    html.window.open(url, "_blank"); // Open in new tab
+                    web.window.open(url, "_blank"); // Open in new tab
 
-                    html.Url.revokeObjectUrl(url); // Free the memory
+                    web.URL.revokeObjectURL(url);
                   }
                 } catch (e) {
                   print("Error loading PDF: $e");
@@ -154,32 +161,37 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               child: Text("Upload PDF"),
               onPressed: () async {
 
-                html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-                uploadInput.accept = '.pdf';
-                uploadInput.multiple = false; // I guess we can restrict the upload to one file with this.
-                uploadInput.click();
+                try {
+                  final jsPromise = pickFile();
+                  final jsData = await js_util.promiseToFuture(jsPromise);
 
-                uploadInput.onChange.listen( (event) async {
-                  final files = uploadInput.files;
-                  if (files == null) {return;}
-                  if (files.isNotEmpty) {
-                    final file   = files[0];
+                  // Extract data using js_util.getProperty
+                  final String name = js_util.getProperty<String>(jsData, 'name');
+                  final int size = js_util.getProperty<int>(jsData, 'size');
+                  final String type = js_util.getProperty<String>(jsData, 'type');
+                  final List<dynamic> jsBytes = js_util.getProperty<List<dynamic>>(jsData, 'data');
 
-                    final reader = html.FileReader();
-
-                    reader.readAsArrayBuffer(file);
-                    await reader.onLoad.first;
-                    setState(() {
-                      Uint8List list = reader.result as Uint8List;
-                      ByteBuffer buffer = list.buffer;
-
-                      this.widget.referenceItem.documentPointer
-                          .setUserSpecifiedBinary(LocalBinary(byteBuffer: buffer));
-                    });
-
+                  if (type != "application/pdf") {
+                    print("File is not PDF.");
+                    return;
                   }
 
-                },);
+                  // Convert to Uint8List
+                  final Uint8List bytes = Uint8List.fromList(jsBytes.cast<int>());
+
+                  setState(() {
+                    // _fileName = fileName;
+                    final ByteBuffer buffer = bytes.buffer;
+
+                    this.widget.referenceItem.documentPointer
+                            .setUserSpecifiedBinary(LocalBinary(byteBuffer: buffer));
+
+                  });
+
+                } catch (e) {
+                  print("File selection failed: $e");
+                }
+                
               },
             ),
           ]
@@ -413,7 +425,7 @@ Future<List<ReferenceItem>> initializeReference() async {
 
   return [
     Future<ReferenceItem>.value(ReferenceItem.withLazyLoad(
-      title: "Test Title",
+      title: "Test Title with PDF",
       authors: "Test Author",
       lazyLoad: () => Future<LocalBinary>.value(LocalBinary(byteBuffer: pdfBuffer))
     )),
@@ -465,7 +477,8 @@ class _MyHomePageState extends State<MyHomePage> {
             }
 
             if (snapshot.hasData) {
-              if (snapshot.data case var data?) {
+              final data = snapshot.data;
+              if (data != null) {
                 _allItems = data;
                 return _ExplorerWidget(
                           allItems: _allItems,
