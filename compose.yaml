@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=devroot
+      - MARIADB_DATABASE=appdb
+      - MARIADB_USER=appuser
+      - MARIADB_PASSWORD=devpass
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -u root -p$MARIADB_ROOT_PASSWORD || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    depends_on:
+      db:
+        condition: service_started
+    environment:
+      HOME: /home/vscode
+
+volumes:
+  db_data: {}
+

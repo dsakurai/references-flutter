@@ -1,32 +1,23 @@
 {
     "name": "Dev Container",
-    "build": {
-      "dockerfile": "Dockerfile"
-    },
-    "workspaceMount": "",
+    // Use Compose so we can run MariaDB alongside the dev container
+    "dockerComposeFile": [
+        "../compose.yaml"
+    ],
+    "service": "dev",
+    // Ensure DB starts with the dev container
+    "runServices": ["db"],
+    // Mount workspace at a predictable path
+    "workspaceFolder": "/workspace",
+
     "remoteUser": "vscode",
     "containerEnv": {
         "HOME": "/home/vscode"
     },
 
-    "runArgs": [
-        "--userns=keep-id",
-        "--volume=${localWorkspaceFolder}:/workspaces/${localWorkspaceFolderBasename}:Z"
-
-        // X11
-        // NOT WORKING. Check out Toolbox: https://github.com/containers/toolbox/issues/610
-        // "--uidmap", "1000:0:1",
-        // "--uidmap", "0:1:1000",
-        // "-e", "DISPLAY",
-        // "--net=host",
-        // "--volume=${localEnv:XAUTHORITY}:/home/vscode/.Xauthority:Z"
-    ],
-    
     "features": {
         "git": "os-provided", // Enable VSCode functionality to re-use git credentials: https://stackoverflow.com/a/73327749
         "sshd": "latest"      // "Add a SSH server into a container so that you can use an external terminal, sftp, or SSHFS to interact with it." https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/sshd.md
-
-
     },
 
     "customizations": {
