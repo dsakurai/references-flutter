@@ -1,7 +1,7 @@
 FROM debian:stable-slim
 # Install any additional packages you need
 RUN apt-get update && \
-    apt install -y git curl
+    apt install -y git curl mariadb-client
     # You'd also want sshd if not auto-installed.
 
 # For VSCode
