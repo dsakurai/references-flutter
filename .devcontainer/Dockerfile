@@ -38,4 +38,4 @@ WORKDIR /workspace
 RUN flutter doctor && flutter --disable-analytics
 
 # Do this in the source folder
-RUN  flutter build web
+RUN  flutter pub get
