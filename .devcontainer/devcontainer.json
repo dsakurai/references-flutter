@@ -15,7 +15,7 @@
 
     "remoteUser": "vscode",
     
-    "postCreateCommand": "cd /workspace/webapp && flutter pub get",
+    "postCreateCommand": "cd /workspace/webapp && flutter pub get && cd /workspace/database && ./create-table.sh",
 
     "features": {
         "git": "os-provided", // Enable VSCode functionality to re-use git credentials: https://stackoverflow.com/a/73327749
