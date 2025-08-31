@@ -1,5 +1,19 @@
-import 'package:server/server.dart' as server;
+import 'package:shelf/shelf.dart';
+import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_router/shelf_router.dart';
 
-void main(List<String> arguments) {
-  print('Hello world: ${server.calculate()}!');
+Future<void> main(List<String> args) async {
+  final router = Router();
+
+  // All API requests go through /api
+  router.get('/api', (Request request) {
+    return Response.ok('Hello World');
+  });
+
+  final handler = const Pipeline()
+      .addMiddleware(logRequests())
+      .addHandler(router);
+
+  final server = await io.serve(handler, '0.0.0.0', 8080);
+  print('Server listening on localhost:${server.port}/api');
 }
