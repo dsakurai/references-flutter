@@ -30,7 +30,7 @@ services:
       HOME: /home/vscode
     volumes:
       - type: bind
-        source: ${WORKSPACE}
+        source: "${WORKSPACE}"
         target: /workspace
     # Keep container alive under Podman (Debian base image would otherwise exit immediately).
     command: ["bash", "-lc", "while sleep 3600; do :; done"]

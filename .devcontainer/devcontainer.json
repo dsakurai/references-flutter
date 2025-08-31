@@ -4,19 +4,16 @@
     "dockerComposeFile": [
         "compose.yaml"
     ],
-    "service": "dev",
     // Ensure DB starts with the dev container
+    "service": "dev",
+
     "runServices": ["db"],
-    // Mount workspace at a predictable path
+
+    // Open VSCode at this folder
     "workspaceFolder": "/workspace",
-    // Ensure host workspace is mounted at /workspace
-    // "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
-    "initializeCommand": "bash -lc 'echo WORKSPACE=${localWorkspaceFolder} > .devcontainer/.env'",
+    "initializeCommand": "echo WORKSPACE=${localWorkspaceFolder} > .devcontainer/.env",
 
     "remoteUser": "vscode",
-    "containerEnv": {
-        "HOME": "/home/vscode"
-    },
 
     "features": {
         "git": "os-provided", // Enable VSCode functionality to re-use git credentials: https://stackoverflow.com/a/73327749
