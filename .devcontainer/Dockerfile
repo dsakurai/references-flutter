@@ -1,23 +1,19 @@
 FROM debian:stable-slim
 # Install any additional packages you need
 RUN apt-get update && \
-    apt install -y git curl
+    apt install -y git curl mariadb-client vim-tiny sudo
     # You'd also want sshd if not auto-installed.
 
 # For VSCode
 RUN adduser --disabled-password --gecos "" vscode && adduser vscode sudo && \
     # Not mandatory but conventional
     mkdir -p /workspace && chown vscode:vscode /workspace && \
-    # Useful but not mandatory
-    apt install -y sudo
+    # sudo without password
+    echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
+
 
 # For Flutter
 RUN apt install -y xz-utils zip unzip
-
-# Tried using Chromium from VSCode for debugging. Doesn't work...
-# RUN apt install chromium
-    # Also consider `chromium`, or `chromium-l10n` for multi-language inputs
-# ENV CHROME_EXECUTABLE="/usr/bin/chromium"
 
 RUN mkdir -p /opt/app && chown vscode:vscode /opt/app
 
@@ -32,6 +28,7 @@ WORKDIR /opt/app
 RUN curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/"$FLUTTER_XZ" | tar -xJ -C ./
 
 ENV PATH="/opt/app/flutter/bin:$PATH"
+ENV EDITOR="vi"
 
 WORKDIR /workspace
 
