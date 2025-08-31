@@ -2,13 +2,16 @@
     "name": "Dev Container",
     // Use Compose so we can run MariaDB alongside the dev container
     "dockerComposeFile": [
-        "../compose.yaml"
+        "compose.yaml"
     ],
     "service": "dev",
     // Ensure DB starts with the dev container
     "runServices": ["db"],
     // Mount workspace at a predictable path
     "workspaceFolder": "/workspace",
+    // Ensure host workspace is mounted at /workspace
+    // "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "initializeCommand": "bash -lc 'echo WORKSPACE=${localWorkspaceFolder} > .devcontainer/.env'",
 
     "remoteUser": "vscode",
     "containerEnv": {

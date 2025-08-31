@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   db:
-    image: mariadb:11.4
+    image: docker.io/library/mariadb:latest
     restart: unless-stopped
     environment:
       - MARIADB_ROOT_PASSWORD=devroot
@@ -19,14 +19,16 @@ services:
 
   dev:
     build:
-      context: .
-      dockerfile: .devcontainer/Dockerfile
+      # context: "/home/daisuke/work/projects/references-flutter/.devcontainer"
+      context: "${WORKSPACE}/.devcontainer"
+      dockerfile: Dockerfile
     depends_on:
       db:
         condition: service_started
     environment:
       HOME: /home/vscode
+    # Keep container alive under Podman (Debian base image would otherwise exit immediately).
+    command: ["bash", "-lc", "while sleep 3600; do :; done"]
 
 volumes:
   db_data: {}
-
