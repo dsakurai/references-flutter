@@ -32,4 +32,4 @@ ENV EDITOR="vi"
 
 WORKDIR /workspace
 
-RUN flutter doctor && flutter --disable-analytics
+RUN flutter doctor && flutter --disable-analytics 
