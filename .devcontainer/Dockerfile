@@ -36,3 +36,6 @@ ENV PATH="/opt/app/flutter/bin:$PATH"
 WORKDIR /workspace
 
 RUN flutter doctor && flutter --disable-analytics
+
+# Do this in the source folder
+RUN  flutter build web
