@@ -5,27 +5,34 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "references_frontend",
+            "name": "server",
+            "type": "dart",
+            "request": "launch",
+            "program": "bin/server.dart",
+            "cwd": "${workspaceFolder}/server"
+        },
+        {
+            "name": "webapp (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "cwd": "${workspaceFolder}/webapp",
+            "deviceId": "web-server"
+        },
+        {
+            "name": "webapp (debug mode)",
             "request": "launch",
             "type": "dart",
             "cwd": "${workspaceFolder}/webapp",
             "deviceId": "web-server"
         },
         {
-            "name": "references_frontend (profile mode)",
+            "name": "webapp (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",
             "cwd": "${workspaceFolder}/webapp",
             "deviceId": "web-server"
         },
-        {
-            "name": "references_frontend (release mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release",
-            "cwd": "${workspaceFolder}/webapp",
-            "deviceId": "web-server"
-        }
     ]
 }
