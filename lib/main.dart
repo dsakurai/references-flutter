@@ -151,7 +151,7 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                   final blob = web.Blob( [bytes.toJS].toJS, web.BlobPropertyBag(type: 'application/pdf') );
                   final url = web.URL.createObjectURL(blob);
                   
-                  if (true) {
+                  if (false) {
                     // Open as blob in new tab
                     web.window.open(url, "_blank"); // Open in new tab
                   } else {
