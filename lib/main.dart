@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
-import 'dart:html' as html; // TODO Make it available for desktop? Works only for the web right now.
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
 
 void main() {
   runApp(const MyApp());
@@ -147,13 +148,30 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                   Uint8List bytes = data.buffer.asUint8List();
 
                   // Works only for the web app
+                  final blob = web.Blob( [bytes.toJS].toJS, web.BlobPropertyBag(type: 'application/pdf') );
+                  final url = web.URL.createObjectURL(blob);
+                  
+                  if (true) {
+                    // Open as blob in new tab
+                    web.window.open(url, "_blank"); // Open in new tab
+                  } else {
+                    // Download the file
 
-                  final blob = html.Blob([bytes], 'application/pdf');
-                  final url  = html.Url.createObjectUrlFromBlob(blob);
+                    // Attempt to open in new tab/window.
+                    final fileName = '_blank';
 
-                  html.window.open(url, "_blank"); // Open in new tab
+                    // Fallback: create an anchor element and force a download.
+                    final anchor = web.document.createElement('a') as web.HTMLAnchorElement;
+                    anchor.href = url;
+                    anchor.download = fileName;
+                    anchor.style.display = 'none';
+                    web.document.body?.append(anchor);
+                    anchor.click();
+                    anchor.remove();
+                  }
 
-                  html.Url.revokeObjectUrl(url); // Free the memory
+                  // Revoke URL on microtask (lets the browser use it first)
+                  Future.microtask(() => web.URL.revokeObjectURL(url));
                 } catch (e) {
                   print("Error loading PDF: $e");
                 }
