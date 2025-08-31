@@ -92,7 +92,7 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
       appBar: AppBar(
         title: const Text("Add A New Reference"),
         leading: IconButton(
-          icon: Icon(Icons.close),
+            icon: Icon(Icons.arrow_back),
           onPressed: () {
             widget.onCancelButtonPressed();
 
