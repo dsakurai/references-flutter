@@ -22,11 +22,16 @@ services:
       # context: "/home/daisuke/work/projects/references-flutter/.devcontainer"
       context: "${WORKSPACE}/.devcontainer"
       dockerfile: Dockerfile
+    userns_mode: keep-id
     depends_on:
       db:
         condition: service_started
     environment:
       HOME: /home/vscode
+    volumes:
+      - type: bind
+        source: ${WORKSPACE}
+        target: /workspace
     # Keep container alive under Podman (Debian base image would otherwise exit immediately).
     command: ["bash", "-lc", "while sleep 3600; do :; done"]
 
