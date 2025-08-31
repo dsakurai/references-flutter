@@ -9,8 +9,8 @@ services:
       - MARIADB_DATABASE=appdb
       - MARIADB_USER=appuser
       - MARIADB_PASSWORD=devpass
-    volumes:
-      - db_data:/var/lib/mysql
+    # volumes:
+    #   - db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mariadb-admin ping -u root -p$MARIADB_ROOT_PASSWORD || exit 1"]
       interval: 5s
@@ -35,5 +35,5 @@ services:
     # Keep container alive under Podman (Debian base image would otherwise exit immediately).
     command: ["bash", "-lc", "while sleep 3600; do :; done"]
 
-volumes:
-  db_data: {}
+# volumes:
+#   db_data: {}
