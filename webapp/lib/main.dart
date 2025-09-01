@@ -3,6 +3,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
 import 'dart:js_interop';
 import 'package:web/web.dart' as web;
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -268,10 +269,13 @@ Future<Navigator?> _navigateEditRoute({
             _popIfFine(itemOriginal, itemForEdit, context);
             // ^ This also navigates back to the page before if the user confirms it.
           },
-          onSaveButtonPressed: (){
-            itemOriginal.copyPropertiesFrom(itemForEdit);
-            if (onSave != null) {onSave();}
-            Navigator.of(context).pop(); // Navigate back to the page before
+          onSaveButtonPressed: () async {
+            final response = await http.get(Uri.parse('http://localhost:8080/api'));
+            if (response.statusCode == 200) {
+              print('Success: ${response.body}');
+            } else {
+              print('Error: ${response.statusCode}');
+            }
           },
           )
       )
