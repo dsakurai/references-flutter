@@ -41,10 +41,47 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class LazyByteData {
+
+  // If this is null, the value is either not determined yet, or the value is actually null.
+  ByteData? _data;
+
+  bool _isDataAvailable = false;
+  bool get isDataAvailable => _isDataAvailable;
+
+  set data(ByteData? newData) {
+    _data = newData;
+    _isDataAvailable = true;
+  }
+  
+  ByteData? get data {
+    if (isDataAvailable) {
+      return _data;
+    } else {
+      throw StateError('Value not downloaded.');
+    }
+  }
+  void clearData() {
+    _isDataAvailable = false;
+    _data = null;
+  }
+
+  LazyByteData(); // default constructor
+
+  LazyByteData.withData(ByteData? initialData, bool available) {
+    // calls the settter
+    data = initialData;
+
+    assert(available == true, 'LazyByteData: you have to assign the value if you provide an initial value.');
+  }
+
+}
+
 class ReferenceItem
  {
   String title;
   String authors;
+  LazyByteData documentBlob = LazyByteData();
 
   ReferenceItem clone() => ReferenceItem(
     title: title,
@@ -144,12 +181,18 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
             TextButton(
               onPressed: () async {
                 try {
+                
                   // Load PDF
                   ByteData data = await rootBundle.load("assets/sample.pdf");
-                  Uint8List bytes = data.buffer.asUint8List();
+                  LazyByteData pdf = LazyByteData.withData(data, true);
+                  print('isDataAvailable: ${pdf.isDataAvailable}');
+
+                  Uint8List bytes = pdf.data!.buffer.asUint8List();
+
+
+                  final blob = web.Blob( [bytes.toJS].toJS, web.BlobPropertyBag(type: 'application/pdf') );
 
                   // Works only for the web app
-                  final blob = web.Blob( [bytes.toJS].toJS, web.BlobPropertyBag(type: 'application/pdf') );
                   final url = web.URL.createObjectURL(blob);
                   
                   if (false) {
