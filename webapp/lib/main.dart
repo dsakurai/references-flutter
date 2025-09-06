@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
 import 'dart:js_interop';
 import 'package:web/web.dart' as web;
 import 'package:http/http.dart' as http;
-import 'package:json_annotation/json_annotation.dart';
+import 'models/reference_item.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,90 +42,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LazyByteData {
-
-  // If this is null, the value is either not determined yet, or the value is actually null.
-  ByteData? _lazyData;
-
-  bool _isLazyDataAvailable = false;
-  bool get isLazyDataAvailable => _isLazyDataAvailable;
-
-  set lazyData(ByteData? data) {
-    _lazyData = data;
-    _isLazyDataAvailable = true;
-  }
-  
-  ByteData? get lazyData {
-    if (isLazyDataAvailable) {
-      return _lazyData;
-    } else {
-      throw StateError('Value not downloaded.');
-    }
-  }
-  void clearData() {
-    _isLazyDataAvailable = false;
-    _lazyData = null;
-  }
-
-  LazyByteData(); // default constructor
-
-  LazyByteData.withData(ByteData? data, bool available) {
-    // calls the settter
-    lazyData = data;
-
-    assert(available == true, 'LazyByteData: you have to assign the value if you provide an initial value.');
-  }
-  
-  LazyByteData.fromJson(String? json, bool available) 
-  : this.withData(
-    (json == null) ? null : ByteData.view(base64Decode(json).buffer),
-    available
-    );
-}
-
-class ReferenceItem
- {
-  String title;
-  String authors;
-  LazyByteData document;
-  
-
-  ReferenceItem clone() => ReferenceItem(
-    title: title,
-    authors: authors
-  );
-
-  void copyPropertiesFrom(ReferenceItem other) {
-    title   = other.title;
-    authors = other.authors;
-  }
-  
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{
-      'title': title,
-      'authors': authors,
-    };
-    
-    if (document.isLazyDataAvailable) {
-      final data = document._lazyData;
-      map['documentBlob'] = (data == null) ? null : base64Encode(data.buffer.asUint8List());
-    }
-    
-    return map;
-  }
-
-  // Generative constructor (documentBlob optional to allow non-const default)
-  ReferenceItem({this.title = "", this.authors = "", LazyByteData? documentBlob})
-      : document = documentBlob ?? LazyByteData();
-
-  bool matches(ReferenceItem that) {
-    return 
-      // Strings are immutable, so comparison by object adresses are fine.
-      (title   == that.title) &&
-      (authors == that.authors)
-    ;
-  }
-}
+// ReferenceItem and LazyByteData are defined in models/reference_item.dart
 
 class ReferenceItemWidget extends StatefulWidget {
 
