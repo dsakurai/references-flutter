@@ -41,25 +41,42 @@ class LazyByteData {
 }
 
 class ReferenceItem {
-  String title;
-  String authors;
-  LazyByteData document;
+  // Minimal fields we actively use (keep maintainable)
+  int? id; // `id` INT AUTO_INCREMENT PRIMARY KEY
+  String title; // `title`
+  String authors; // `authors`
+  LazyByteData document; // `document` (longblob)
 
-  ReferenceItem({this.title = '', this.authors = '', LazyByteData? documentBlob})
-      : document = documentBlob ?? LazyByteData();
+  ReferenceItem({
+    this.id,
+    this.title = '',
+    this.authors = '',
+    LazyByteData? documentBlob,
+  }) : document = documentBlob ?? LazyByteData();
 
-  ReferenceItem clone() => ReferenceItem(title: title, authors: authors);
+  ReferenceItem clone() => ReferenceItem(
+        id: id,
+        title: title,
+        authors: authors,
+        documentBlob: document,
+      );
 
   void copyPropertiesFrom(ReferenceItem other) {
+    id = other.id;
     title = other.title;
     authors = other.authors;
+    document = other.document;
   }
 
   Map<String, dynamic> toJson() {
+  
+    // Create json and conditionally add an optional property
     final map = <String, dynamic>{
+      'id': id,
       'title': title,
       'authors': authors,
     };
+
     if (document.isLazyDataAvailable) {
       final data = document._lazyData;
       map['documentBlob'] =
@@ -68,5 +85,6 @@ class ReferenceItem {
     return map;
   }
 
-  bool matches(ReferenceItem that) => title == that.title && authors == that.authors;
+  // TODO make available the document data before comparing?
+  bool matches(ReferenceItem that) => title == that.title && authors == that.authors && authors == that.authors && document == that.document;
 }

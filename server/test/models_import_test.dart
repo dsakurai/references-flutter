@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   test('ReferenceItem can be constructed; actual testing is done in the webapp package', () {
-    final item = ReferenceItem(title: 'A', authors: 'B');
+    final item = ReferenceItem(id: 7, title: 'A', authors: 'B');
+    expect(item.id, 7);
     expect(item.title, 'A');
     expect(item.authors, 'B');
   });
