@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:references_frontend/models/reference_item.dart';
+import 'package:references_models/models/reference_item.dart';
 
 void main() {
   group('ReferenceItem.toJson dynamic omission', () {

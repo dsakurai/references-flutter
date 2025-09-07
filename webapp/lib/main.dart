@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'dart:js_interop';
 import 'package:web/web.dart' as web;
 import 'package:http/http.dart' as http;
-import 'models/reference_item.dart';
+import 'package:references_models/models/reference_item.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// ReferenceItem and LazyByteData are defined in models/reference_item.dart
+// ReferenceItem and LazyByteData are defined in the shared references_models package
 
 class ReferenceItemWidget extends StatefulWidget {
 
