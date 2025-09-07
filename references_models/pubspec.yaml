@@ -1,0 +1,14 @@
+name: references_models
+description: Shared model classes for both server and webapp.
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  # No external deps; uses only core Dart libraries
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

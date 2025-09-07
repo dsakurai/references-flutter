@@ -40,6 +40,8 @@ dependencies:
   web: ^0.5.1
   http: ^1.2.1
   json_annotation: ^4.9.0
+  references_models:
+    path: ../references_models
 
 dev_dependencies:
   flutter_test:
