@@ -93,10 +93,10 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               children: [
                 Text("Title: "),
                 Expanded(child: TextFormField(
-                    initialValue: widget.referenceItem.title,
+                    initialValue: widget.referenceItem.title.value,
                     onChanged: (value) {
                       setState(() {
-                        widget.referenceItem.title = value;
+                        widget.referenceItem.title.value = value;
                       });
                     },
                 ))
@@ -108,10 +108,10 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               children: [
                 Text("Authors: "),
                   Expanded(child: TextFormField(
-                    initialValue: widget.referenceItem.authors,
+                    initialValue: widget.referenceItem.authors.value,
                     onChanged: (value) {
                       setState(() {
-                        widget.referenceItem.authors = value;
+                        widget.referenceItem.authors.value = value;
                       });
                     },
                   ))
@@ -213,7 +213,7 @@ void _popIfFine(
   ReferenceItem itemEdited,
   context) async {
 
-  if (! itemEdited.matches(itemOriginal)) {
+  if (! itemEdited.isModified(itemOriginal)) {
     // user edited this reference => ask the user
 
     bool? doAbandon = await _popConfirmationDialog(context); // Abandon the edit? 
@@ -232,7 +232,7 @@ Future<Navigator?> _navigateEditRoute({
   Function? onSave, // Designed for adding a new item
   }) {
 
-  var itemForEdit   = itemOriginal.clone();
+  var itemForEdit   = itemOriginal.deepCopy();
 
   return Navigator.push(
     context,
@@ -283,7 +283,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
     if (query.isNotEmpty) {
       // Filter items
       items = items.where((item) {
-        return item.title.toLowerCase().contains(query.toLowerCase());
+        return item.title.value.toLowerCase().contains(query.toLowerCase());
       })
       .toList();
     }
@@ -319,7 +319,7 @@ class _ExplorerState extends State<_ExplorerWidget> {
               itemCount: _filteredItems.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(_filteredItems[index].title),
+                  title: Text(_filteredItems[index].title.value),
                   trailing:
                     ElevatedButton(
                       onPressed: () {

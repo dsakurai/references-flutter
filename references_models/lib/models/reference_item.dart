@@ -40,41 +40,84 @@ class LazyByteData {
             available);
 }
 
+/**
+ * A record / cell in the database table.
+ * Tracks whether it has been modified by the enduser.
+ */
+class Record<T> {
+
+  // Keeps track of modifications
+  bool _isModified = false;
+  get isModified => _isModified;
+
+  T _value;
+  T get value => _value;
+  
+  // Mark as modified on set
+  set value(T newValue) {
+    _isModified = true;
+    _value = newValue;
+  }
+
+  final String columnName;
+
+  Record(this.columnName,
+         value,
+        {isModified = false} // can be optionally set to allow a deep copy of this class instance
+        ):
+    _value    = value,       // Initial the value, but do not mark as modified because the user did not change it
+    _isModified = isModified;
+
+  Record<T> deepCopy() => Record<T>(columnName, _value, isModified: _isModified);
+}
+
 class ReferenceItem {
   // Minimal fields we actively use (keep maintainable)
-  int? id; // `id` INT AUTO_INCREMENT PRIMARY KEY
-  String title; // `title`
-  String authors; // `authors`
+  
+  // TODO make final and use LazyRecord<int?> id
+  int? id = null; // `id` INT AUTO_INCREMENT PRIMARY KEY
+
+  // TODO I probably don't need to hold these as Record class instances. Instead, generate Record instances dynamically with a getter.
+  final Record<String> title; // `title`
+  final Record<String> authors; // `authors`
   LazyByteData document; // `document` (longblob)
-
+  
+  
   ReferenceItem({
-    this.id,
-    this.title = '',
-    this.authors = '',
+    id = null,
+    title = '',
+    authors = '',
     LazyByteData? documentBlob,
-  }) : document = documentBlob ?? LazyByteData();
+  })  : id = id,
+        title = Record<String>('title', title),
+        authors = Record<String>('authors', authors),
+        document = documentBlob ?? LazyByteData();
 
-  ReferenceItem clone() => ReferenceItem(
-        id: id,
-        title: title,
-        authors: authors,
-        documentBlob: document,
+  // Only used internally for deep copying
+  ReferenceItem._fromRecords(
+    int? id,
+    Record<String> title,
+    Record<String> authors,
+    documentBlob,
+  ) : id        = id,
+       title    = title.deepCopy(),
+       authors  = authors.deepCopy(),
+       document = documentBlob ?? LazyByteData();
+        
+  ReferenceItem deepCopy() => ReferenceItem._fromRecords(
+        id,
+        title,
+        authors,
+        document,
       );
-
-  void copyPropertiesFrom(ReferenceItem other) {
-    id = other.id;
-    title = other.title;
-    authors = other.authors;
-    document = other.document;
-  }
 
   Map<String, dynamic> toJson() {
   
     // Create json and conditionally add an optional property
     final map = <String, dynamic>{
       'id': id,
-      'title': title,
-      'authors': authors,
+      'title': title.value,
+      'authors': authors.value,
     };
 
     if (document.isLazyDataAvailable) {
@@ -86,5 +129,5 @@ class ReferenceItem {
   }
 
   // TODO make available the document data before comparing?
-  bool matches(ReferenceItem that) => title == that.title && authors == that.authors && authors == that.authors && document == that.document;
+  bool isModified(ReferenceItem that) => title.value == that.title.value && authors.value == that.authors.value && document == that.document;
 }
