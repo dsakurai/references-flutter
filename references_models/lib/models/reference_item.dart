@@ -100,9 +100,9 @@ class ReferenceItem {
     Record<String> authors,
     documentBlob,
   ) : id        = id,
-       title    = title.deepCopy(),
-       authors  = authors.deepCopy(),
-       document = documentBlob ?? LazyByteData();
+      title    = title.deepCopy(),
+      authors  = authors.deepCopy(),
+      document = documentBlob ?? LazyByteData();
         
   ReferenceItem deepCopy() => ReferenceItem._fromRecords(
         id,
