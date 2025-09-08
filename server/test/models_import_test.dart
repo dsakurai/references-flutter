@@ -6,14 +6,11 @@ void main() {
     final item = ReferenceItem(id: 7, title: 'A', authors: 'B');
     expect(item.id, 7);
     expect(item.title.value, 'A');
-    expect(item.title.isModified, false);
 
     // Modify the value
     item.title.value = 'B';
     expect(item.title.value, 'B');
-    expect(item.title.isModified, true);
 
     expect(item.authors.value, 'B');
-    expect(item.authors.isModified, false);
   });
 }

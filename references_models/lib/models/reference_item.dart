@@ -46,29 +46,19 @@ class LazyByteData {
  */
 class Record<T> {
 
-  // Keeps track of modifications
-  bool _isModified = false;
-  get isModified => _isModified;
-
-  T _value;
-  T get value => _value;
+  T value;
   
-  // Mark as modified on set
-  set value(T newValue) {
-    _isModified = true;
-    _value = newValue;
-  }
-
   final String columnName;
 
   Record(this.columnName,
-         value,
-        {isModified = false} // can be optionally set to allow a deep copy of this class instance
-        ):
-    _value    = value,       // Initial the value, but do not mark as modified because the user did not change it
-    _isModified = isModified;
+         this.value,
+        );
 
-  Record<T> deepCopy() => Record<T>(columnName, _value, isModified: _isModified);
+  // TODO Seems I don't need this method. However, later I might want to deep copy LazyByteData.
+  void deepCopy(Record<T> that) {
+    this.value      = that.value;
+    assert( that.columnName == this.columnName, 'Cannot deep copy Record with different column names.');
+  }
 }
 
 class ReferenceItem {
@@ -78,8 +68,8 @@ class ReferenceItem {
   int? id = null; // `id` INT AUTO_INCREMENT PRIMARY KEY
 
   // TODO I probably don't need to hold these as Record class instances. Instead, generate Record instances dynamically with a getter.
-  final Record<String> title; // `title`
-  final Record<String> authors; // `authors`
+  final   title = Record<String>('title',  ''); // `title`
+  final authors = Record<String>('authors',''); // `authors`
   LazyByteData document; // `document` (longblob)
   
   
@@ -89,9 +79,11 @@ class ReferenceItem {
     authors = '',
     LazyByteData? documentBlob,
   })  : id = id,
-        title = Record<String>('title', title),
-        authors = Record<String>('authors', authors),
-        document = documentBlob ?? LazyByteData();
+        document = documentBlob ?? LazyByteData()
+        {
+    this.title.value = title;
+    this.authors.value = authors;
+  }
 
   // Only used internally for deep copying
   ReferenceItem._fromRecords(
@@ -99,10 +91,12 @@ class ReferenceItem {
     Record<String> title,
     Record<String> authors,
     documentBlob,
-  ) : id        = id,
-      title    = title.deepCopy(),
-      authors  = authors.deepCopy(),
-      document = documentBlob ?? LazyByteData();
+  ) : id       = id,
+      document = documentBlob ?? LazyByteData()
+  {
+    this.title.deepCopy(title);
+    this.authors.deepCopy(authors);
+  }
         
   ReferenceItem deepCopy() => ReferenceItem._fromRecords(
         id,
