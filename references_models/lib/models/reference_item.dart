@@ -62,7 +62,7 @@ class Record<T> {
 }
 
 class ReferenceItem {
-  // Minimal fields we actively use (keep maintainable)
+  // Minimal database fields we use (we keep the code maintainable this way).
   
   // TODO make final and use LazyRecord<int?> id
   int? id = null; // `id` INT AUTO_INCREMENT PRIMARY KEY
