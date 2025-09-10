@@ -67,7 +67,6 @@ class ReferenceItem {
   // TODO make final and use LazyRecord<int?> id
   int? id = null; // `id` INT AUTO_INCREMENT PRIMARY KEY
 
-  // TODO I probably don't need to hold these as Record class instances. Instead, generate Record instances dynamically with a getter.
   final   title = Record<String>('title',  ''); // `title`
   final authors = Record<String>('authors',''); // `authors`
   LazyByteData document; // `document` (longblob)
