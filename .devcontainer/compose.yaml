@@ -16,6 +16,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+    networks:
+      - devnet
 
   dev:
     build:
@@ -28,12 +30,38 @@ services:
         condition: service_started
     environment:
       HOME: /home/vscode
+    # Use a user-defined network (see bottom) instead of slirp4netns network_mode.
+    # slirp4netns has issues with DNS resolution, as it prioritizes IPv6, which still has some problems as of today.
     volumes:
       - type: bind
         source: "${WORKSPACE}"
         target: /workspace
     # Keep container alive under Podman (Debian base image would otherwise exit immediately).
     command: ["bash", "-lc", "while sleep 3600; do :; done"]
+
+    networks:
+      devnet:
+        aliases:
+          - dev
+
+    # Provide explicit DNS resolver behavior for this service. Applied here (instead of
+    # network-level) for better compatibility with some Podman + compose implementations
+    # that ignore network-level dns_opt.
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    dns_opt:
+      - single-request
+      - attempts:2
+      - timeout:1
+
+networks:
+  devnet:
+    driver: bridge
+
+    # Provide explicit DNS servers & resolver behavior. This avoids glitches that would be introduced by slirp4netns.
+    ipam:
+      driver: default
 
 # volumes:
 #   db_data: {}
