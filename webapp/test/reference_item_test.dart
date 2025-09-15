@@ -19,7 +19,7 @@ void main() {
     test('includes documentBlob: null when available but null', () {
       final item = ReferenceItem(title: 'A', authors: 'B');
       // Mark as available but null
-      item.document.lazyData = null;
+      item.document.value = null;
 
       final json = item.toJson();
 
@@ -30,7 +30,7 @@ void main() {
     test('includes base64 when available with data', () {
       final item = ReferenceItem(title: 'A', authors: 'B');
       final data = ByteData.view(Uint8List.fromList([1, 2, 3]).buffer);
-      item.document.lazyData = data;
+      item.document.value = data;
 
       final json = item.toJson();
 

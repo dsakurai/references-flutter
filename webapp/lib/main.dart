@@ -123,10 +123,11 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
                 
                   // Load PDF
                   ByteData data = await rootBundle.load("assets/sample.pdf");
-                  LazyByteData pdf = LazyByteData.withData(data, true);
-                  print('isDataAvailable: ${pdf.isLazyDataAvailable}');
+                  var pdf = LazyRecord<ByteData?>("document");
+                  pdf.value = data;
+                  print('isDataAvailable: ${pdf.isLazyValueAvailable}');
 
-                  Uint8List bytes = pdf.lazyData!.buffer.asUint8List();
+                  Uint8List bytes = pdf.value!.buffer.asUint8List();
 
 
                   final blob = web.Blob( [bytes.toJS].toJS, web.BlobPropertyBag(type: 'application/pdf') );
