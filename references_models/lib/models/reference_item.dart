@@ -104,8 +104,6 @@ class Record<T> extends RecordBase<T> {
   void deepCopy(Record<T> that) {
     _deepCopy(that);
     this.originalValue = that.originalValue;
-    print(that.originalValue);
-    print(this.originalValue);
   }
 }
 
@@ -115,8 +113,8 @@ class ReferenceItem {
   // TODO make final and use LazyRecord<int?> id
   int? id = null; // `id` INT AUTO_INCREMENT PRIMARY KEY
 
-  var title    = Record<String>('title',  ''); // `title`
-  var authors  = Record<String>('authors',''); // `authors`
+  final Record<String> title; // `title`
+  final Record<String> authors; // `authors`
   var document = LazyRecord<ByteData?>('document'); // `document` (longblob)
   
   
@@ -135,7 +133,9 @@ class ReferenceItem {
     Record<String> title,
     Record<String> authors,
     LazyRecord<ByteData?> document,
-  ) : id       = id
+  ) : id       = id,
+      title   = Record<String>('title',   ''),
+      authors = Record<String>('authors', '')
   {
     this.title.deepCopy(title);
     this.authors.deepCopy(authors);
