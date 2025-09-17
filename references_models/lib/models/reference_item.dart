@@ -52,7 +52,6 @@ class LazyRecord<T> extends RecordBase<T> {
   LazyRecord(columnName) : _isLazyValueAvailable = false, super(columnName) {
   }
 
-  // TODO Seems I don't need this method.
   void deepCopy(LazyRecord<T> that) {
     _isLazyValueAvailable = that._isLazyValueAvailable;
     _hasChanged = that._hasChanged;
