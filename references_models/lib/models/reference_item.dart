@@ -91,9 +91,6 @@ class Record<T> extends RecordBase<T> {
   /*final*/ T originalValue;
   bool hasChanged() {
     assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
-    
-    print(originalValue);
-    print(value);
 
     return value != originalValue;
   }
