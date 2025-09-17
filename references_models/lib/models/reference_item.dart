@@ -167,7 +167,7 @@ class ReferenceItem {
   }
 
   // TODO make available the document data before comparing?
-  bool isModified(ReferenceItem that) {
+  bool hasChanged(ReferenceItem that) {
     assert(this.id == that.id);
 
     assert(title.value is String, 'Expected title.value to be a String since we compare it by value, got ${title.value.runtimeType}.');

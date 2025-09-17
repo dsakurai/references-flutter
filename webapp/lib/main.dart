@@ -214,7 +214,7 @@ void _popIfFine(
   ReferenceItem itemEdited,
   context) async {
 
-  if (! itemEdited.isModified(itemOriginal)) {
+  if (! itemEdited.hasChanged(itemOriginal)) {
     // user edited this reference => ask the user
 
     bool? doAbandon = await _popConfirmationDialog(context); // Abandon the edit? 
