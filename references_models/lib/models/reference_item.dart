@@ -166,21 +166,8 @@ class ReferenceItem {
   bool hasChanged(ReferenceItem that) {
     assert(this.id == that.id);
 
-    assert(title.value is String, 'Expected title.value to be a String since we compare it by value, got ${title.value.runtimeType}.');
-    if (title.value != that.title.value ) {
-      return false;
-    }
-
-    assert(authors.value is String, 'Expected title.value to be a String since we compare it by value, got ${title.value.runtimeType}.');
-    if (authors.value != that.authors.value) {
-      return false;
-    }
-
-    // TODO FIX THIS
-    if (!document.isLazyValueAvailable) {
-      return false;
-    }
-    
-    return true;
+    // If any field has changed, the item has changed.
+    return <RecordBase<dynamic>>[title, authors, document]
+        .any((f) => f.hasChanged());
   }
 }
