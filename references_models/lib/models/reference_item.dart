@@ -20,8 +20,28 @@ abstract class RecordBase<T> {
   }
 }
 
+mixin TimeStamp {
+  // Shared across all instances using this mixin.
+  static int _sharedCount = -1;
+
+  late int _count;
+  
+  get count => _count;
+
+  int updateTimeStamp() {
+    _sharedCount++;
+    _count = _sharedCount;
+    return _count;
+  }
+
+  void copyTimeStamp(TimeStamp t) {
+    _count = t._count;
+  }
+
+}
+
 // Platform-agnostic data holder that can be tested on the VM.
-class LazyRecord<T> extends RecordBase<T> {
+class LazyRecord<T> extends RecordBase<T> with TimeStamp {
   late T _lazyValue;
   bool _isLazyValueAvailable = false;
 
@@ -30,6 +50,7 @@ class LazyRecord<T> extends RecordBase<T> {
   set value(T newValue) {
     _lazyValue = newValue;
     _isLazyValueAvailable = true;
+    updateTimeStamp();
   }
 
   T get value {
@@ -41,14 +62,17 @@ class LazyRecord<T> extends RecordBase<T> {
 
   void unloadValue() {
     _isLazyValueAvailable = false;
+    updateTimeStamp();
   }
-  
-  LazyRecord(columnName) : _isLazyValueAvailable = false, super(columnName);
-  
-  void deepCopy(LazyRecord<T> that) {
-    this._isLazyValueAvailable = that._isLazyValueAvailable;
 
-    // is the final value already set?
+  LazyRecord(columnName) : _isLazyValueAvailable = false, super(columnName) {
+    updateTimeStamp();
+  }
+
+  void deepCopy(LazyRecord<T> that) {
+    _isLazyValueAvailable = that._isLazyValueAvailable;
+    copyTimeStamp(that);
+
     if (that._isLazyValueAvailable) {
       // yes => copy it
       _deepCopy(that);
@@ -157,9 +181,9 @@ class ReferenceItem {
     }
 
     // TODO FIX THIS
-    // if (!document.isLazyValueAvailable) {
-    //   return false;
-    // }  
+    if (!document.isLazyValueAvailable) {
+      return false;
+    }
     
     return true;
   }
