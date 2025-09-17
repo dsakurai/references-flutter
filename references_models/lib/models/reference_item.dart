@@ -12,6 +12,8 @@ abstract class RecordBase<T> {
   set value (T newValue);
   T get value;
   
+  bool hasChanged();
+  
   RecordBase(this.columnName);
   
   void _deepCopy(RecordBase<T> that) {
@@ -20,37 +22,20 @@ abstract class RecordBase<T> {
   }
 }
 
-mixin TimeStamp {
-  // Shared across all instances using this mixin.
-  static int _sharedCount = -1;
-
-  late int _count;
-  
-  get count => _count;
-
-  int updateTimeStamp() {
-    _sharedCount++;
-    _count = _sharedCount;
-    return _count;
-  }
-
-  void copyTimeStamp(TimeStamp t) {
-    _count = t._count;
-  }
-
-}
-
 // Platform-agnostic data holder that can be tested on the VM.
-class LazyRecord<T> extends RecordBase<T> with TimeStamp {
+class LazyRecord<T> extends RecordBase<T> {
   late T _lazyValue;
   bool _isLazyValueAvailable = false;
 
   bool get isLazyValueAvailable => _isLazyValueAvailable;
+  
+  bool _hasChanged = false;
 
   set value(T newValue) {
     _lazyValue = newValue;
     _isLazyValueAvailable = true;
-    updateTimeStamp();
+
+    _hasChanged = true;
   }
 
   T get value {
@@ -59,25 +44,29 @@ class LazyRecord<T> extends RecordBase<T> with TimeStamp {
     }
     return _lazyValue;
   }
-
-  void unloadValue() {
-    _isLazyValueAvailable = false;
-    updateTimeStamp();
+  
+  bool hasChanged() {
+    return _hasChanged;
   }
 
   LazyRecord(columnName) : _isLazyValueAvailable = false, super(columnName) {
-    updateTimeStamp();
   }
 
+  // TODO Seems I don't need this method.
   void deepCopy(LazyRecord<T> that) {
     _isLazyValueAvailable = that._isLazyValueAvailable;
-    copyTimeStamp(that);
+    _hasChanged = that._hasChanged;
 
     if (that._isLazyValueAvailable) {
       // yes => copy it
       _deepCopy(that);
     }
   }
+
+  // void unloadValue() {
+  //   _isLazyValueAvailable = false;
+  //   updateTimeStamp();
+  // }
   
   // LazyRecord.withData(T newValue, bool available) {
   //   // Setter marks available = true
@@ -99,8 +88,15 @@ class LazyRecord<T> extends RecordBase<T> with TimeStamp {
 class Record<T> extends RecordBase<T> {
 
   T value;
+  
+  final T originalValue;
+  bool hasChanged() {
+    assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
 
-  Record(columnName, this.value): super(columnName);
+    return value != originalValue;
+  }
+
+  Record(columnName, this.value): originalValue = value, super(columnName);
 
   // TODO Seems I don't need this method. However, later I might want to deep copy LazyByteData.
   void deepCopy(Record<T> that) {
