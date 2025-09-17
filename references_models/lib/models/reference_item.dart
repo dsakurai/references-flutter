@@ -89,18 +89,24 @@ class Record<T> extends RecordBase<T> {
 
   T value;
   
-  final T originalValue;
+  /*final*/ T originalValue;
   bool hasChanged() {
     assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
+    
+    print(originalValue);
+    print(value);
 
     return value != originalValue;
   }
 
-  Record(columnName, this.value): originalValue = value, super(columnName);
+  Record(columnName, value): this.value = value, originalValue = value, super(columnName);
 
   // TODO Seems I don't need this method. However, later I might want to deep copy LazyByteData.
   void deepCopy(Record<T> that) {
     _deepCopy(that);
+    this.originalValue = that.originalValue;
+    print(that.originalValue);
+    print(this.originalValue);
   }
 }
 
@@ -110,20 +116,19 @@ class ReferenceItem {
   // TODO make final and use LazyRecord<int?> id
   int? id = null; // `id` INT AUTO_INCREMENT PRIMARY KEY
 
-  final   title  = Record<String>('title',  ''); // `title`
-  final authors  = Record<String>('authors',''); // `authors`
-  final document = LazyRecord<ByteData?>('document'); // `document` (longblob)
+  var title    = Record<String>('title',  ''); // `title`
+  var authors  = Record<String>('authors',''); // `authors`
+  var document = LazyRecord<ByteData?>('document'); // `document` (longblob)
   
   
   ReferenceItem({
     id = null,
     title = '',
     authors = '',
-  })  : id = id
-        {
-    this.title.value = title;
-    this.authors.value = authors;
-  }
+  })  : id = id,
+        title = Record<String>('title',  title),
+        authors = Record<String>('authors',authors),
+        document = LazyRecord<ByteData?>('document');
 
   // Only used internally for deep copying
   ReferenceItem._fromRecords(
@@ -167,7 +172,11 @@ class ReferenceItem {
     assert(this.id == that.id);
 
     // If any field has changed, the item has changed.
-    return <RecordBase<dynamic>>[title, authors, document]
+    return <RecordBase<dynamic>>[
+      title,
+      authors,
+      /*document*/
+    ]
         .any((f) => f.hasChanged());
   }
 }
