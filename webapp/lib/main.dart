@@ -210,11 +210,10 @@ Future<bool?> _popConfirmationDialog (BuildContext context) async {
 }
 
 void _popIfFine(
-  ReferenceItem itemOriginal,
   ReferenceItem itemEdited,
   context) async {
 
-  if (itemEdited.hasChanged(itemOriginal)) {
+  if (itemEdited.hasChanged()) {
     // user edited this reference => ask the user
 
     bool? doAbandon = await _popConfirmationDialog(context); // Abandon the edit? 
@@ -249,7 +248,7 @@ Future<Navigator?> _navigateEditRoute({
         child: ReferenceItemWidget(
           referenceItem: itemForEdit,
           onCancelButtonPressed: () {
-            _popIfFine(itemOriginal, itemForEdit, context);
+            _popIfFine(itemForEdit, context);
             // ^ This also navigates back to the page before if the user confirms it.
           },
           onSaveButtonPressed: () async {
@@ -398,11 +397,11 @@ class _MyHomePageState extends State<MyHomePage> {
         _ExplorerWidget(allItems: _allItems,),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          var newItem = ReferenceItem();
+          var newReference = ReferenceItem();
           _navigateEditRoute( // go to another page
-            itemOriginal: newItem,
+            itemOriginal: newReference,
             context: context,
-            onSave: () { _allItems.add(newItem); }
+            onSave: () { _allItems.add(newReference); }
           ).then(
             (_){setState((){});} // reload this page after coming back from the page
           );

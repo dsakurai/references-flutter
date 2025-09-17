@@ -101,7 +101,6 @@ class Record<T> extends RecordBase<T> {
 
   Record(columnName, value): this.value = value, originalValue = value, super(columnName);
 
-  // TODO Seems I don't need this method. However, later I might want to deep copy LazyByteData.
   void deepCopy(Record<T> that) {
     _deepCopy(that);
     this.originalValue = that.originalValue;
@@ -168,8 +167,7 @@ class ReferenceItem {
   }
 
   // TODO make available the document data before comparing?
-  bool hasChanged(ReferenceItem that) {
-    assert(this.id == that.id);
+  bool hasChanged() {
 
     // If any field has changed, the item has changed.
     return <RecordBase<dynamic>>[
