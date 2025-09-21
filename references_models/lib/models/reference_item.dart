@@ -127,9 +127,8 @@ class ReferenceItem {
   // Minimal database fields we use (we keep the code maintainable this way).
   
   final FixedRecord<int> id; // `id` is an INT AUTO_INCREMENT PRIMARY KEY in the database.
-
-  final Record<String> title; // `title`
-  final Record<String> authors; // `authors`
+  final      Record<String> title; // `title` in the database
+  final      Record<String> authors; // `authors`
   final LazyRecord<ByteData?> document; // `document` (longblob)
   
   
@@ -139,10 +138,10 @@ class ReferenceItem {
     title = '',
     authors = '',
     Completer<ByteData?>? documentCompleter = null,
-  })  : id    = FixedRecord<int>('id', id),
-        title = Record<String>('title',  title),
-        authors = Record<String>('authors',authors),
-        document = LazyRecord('document', documentCompleter ?? Completer<ByteData?>());
+  })  : id       = FixedRecord ('id', id),
+        title    = Record      ('title',  title),
+        authors  = Record      ('authors',authors),
+        document = LazyRecord  ('document', documentCompleter ?? Completer<ByteData?>());
 
   // Only used internally for deep copying
   ReferenceItem.from(ReferenceItem item) :
