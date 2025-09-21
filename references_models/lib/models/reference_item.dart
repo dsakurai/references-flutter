@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:typed_data';
 
-abstract class FixedRecordBase<T> {
+abstract class IFixedRecord<T> {
   final String columnName;
 
   T get value;
   
-  FixedRecordBase(this.columnName);
+  IFixedRecord(this.columnName);
   
-  void _deepCopy(RecordBase<T> that) {
+  void checkConsistency(IRecord<T> that) {
     assert( that.columnName == this.columnName, 'Cannot deep copy RecordBase with different column names.');
   }
 }
@@ -18,18 +18,18 @@ abstract class FixedRecordBase<T> {
  * This is the base class of LazyRecord.
  * The LazyRecord adds the ability to track whether the value is available or not.
  */
-abstract class RecordBase<T> extends FixedRecordBase<T> {
+abstract class IRecord<T> extends IFixedRecord<T> {
 
   set value (T newValue);
   T get value;
   
   bool hasChanged();
   
-  RecordBase(String columnName): super(columnName);
+  IRecord(String columnName): super(columnName);
 }
 
 // Platform-agnostic data holder that can be tested on the VM.
-class LazyRecord<T> extends RecordBase<Future<T>> {
+class LazyRecord<T> extends IRecord<Future<T>> {
 
   Completer<T> value_completer = Completer<T>(); // Provides the value once available
 
@@ -69,7 +69,7 @@ class LazyRecord<T> extends RecordBase<Future<T>> {
     value_completer = that.value_completer;
     _hasChanged = that._hasChanged;
 
-    _deepCopy(that);
+    checkConsistency(that);
   }
 
   // LazyRecord.withData(T newValue, bool available) {
@@ -89,38 +89,39 @@ class LazyRecord<T> extends RecordBase<Future<T>> {
  * A record / cell in the database table.
  * Tracks whether it has been modified by the enduser.
  */
-class Record<T> extends RecordBase<T> {
+class Record<T> extends IRecord<T> {
 
   T value;
   
   /*final*/ T originalValue;
   bool hasChanged() {
     assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
-
     return value != originalValue;
   }
 
   Record(columnName, value): this.value = value, originalValue = value, super(columnName);
 
   void deepCopy(Record<T> that) {
-    _deepCopy(that);
+    checkConsistency(that);
     this.originalValue = that.originalValue;
     this.value      = that.value;
   }
 }
 
-class FixedRecord<T> extends FixedRecordBase<T> {
+class FixedRecord<T> extends IFixedRecord<T> {
   final T value;
   
   FixedRecord(columnName, this.value): super(columnName);
 
-  FixedRecord.copy(FixedRecord<T> record): value = record.value, super(record.columnName);
+  FixedRecord.copy(FixedRecord<T> record): value = record.value, super(record.columnName) {
+    assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
+  }
 }
 
 class ReferenceItem {
   // Minimal database fields we use (we keep the code maintainable this way).
   
-  final FixedRecord<int> id; // `id` INT AUTO_INCREMENT PRIMARY KEY
+  final FixedRecord<int> id; // `id` is an INT AUTO_INCREMENT PRIMARY KEY in the database.
 
   final Record<String> title; // `title`
   final Record<String> authors; // `authors`
@@ -185,7 +186,7 @@ class ReferenceItem {
   bool hasChanged() {
 
     // If any field has changed, the item has changed.
-    return <RecordBase<dynamic>>[
+    return <IRecord<dynamic>>[
       title,
       authors,
       document
