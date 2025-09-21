@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'dart:typed_data';
 
 /*! A minimalistic class that allows to store a value.
@@ -17,56 +18,54 @@ abstract class RecordBase<T> {
   RecordBase(this.columnName);
   
   void _deepCopy(RecordBase<T> that) {
-    this.value      = that.value;
     assert( that.columnName == this.columnName, 'Cannot deep copy RecordBase with different column names.');
   }
 }
 
 // Platform-agnostic data holder that can be tested on the VM.
-class LazyRecord<T> extends RecordBase<T> {
-  late T _lazyValue;
-  bool _isLazyValueAvailable = false;
+class LazyRecord<T> extends RecordBase<Future<T>> {
 
-  bool get isLazyValueAvailable => _isLazyValueAvailable;
-  
+  Completer<T> value_completer = Completer<T>(); // Provides the value once available
+
   bool _hasChanged = false;
 
-  set value(T newValue) {
-    _lazyValue = newValue;
-    _isLazyValueAvailable = true;
+  @override
+  set value(Future<T> newValue) {
+    final c = value_completer = Completer<T>(); // reset on each assignment
+    newValue.then(c.complete, onError: c.completeError);
 
     _hasChanged = true;
   }
+  
+  // // Optional: accept both T and Future<T>
+  // void setValue(FutureOr<T> v) {
+  //   final c = _completer = Completer<T>();
+  //   Future.sync(() => v).then(c.complete, onError: c.completeError);
+  //   _hasChanged = true;
+  // }
 
-  T get value {
-    if (!_isLazyValueAvailable) {
-      throw StateError('Value not downloaded.');
-    }
-    return _lazyValue;
+
+  @override
+  Future<T> get value {
+    return value_completer.future;
   }
   
   bool hasChanged() {
     return _hasChanged;
   }
 
-  LazyRecord(columnName) : _isLazyValueAvailable = false, super(columnName) {
-  }
+  LazyRecord(columnName, this.value_completer): super(columnName);
+  LazyRecord.withValue(columnName, T value)
+    : this.value_completer = Completer<T>()..complete(value),
+  super(columnName);
 
   void deepCopy(LazyRecord<T> that) {
-    _isLazyValueAvailable = that._isLazyValueAvailable;
+    value_completer = that.value_completer;
     _hasChanged = that._hasChanged;
 
-    if (that._isLazyValueAvailable) {
-      // yes => copy it
-      _deepCopy(that);
-    }
+    _deepCopy(that);
   }
 
-  // void unloadValue() {
-  //   _isLazyValueAvailable = false;
-  //   updateTimeStamp();
-  // }
-  
   // LazyRecord.withData(T newValue, bool available) {
   //   // Setter marks available = true
   //   value = newValue;
@@ -100,6 +99,7 @@ class Record<T> extends RecordBase<T> {
   void deepCopy(Record<T> that) {
     _deepCopy(that);
     this.originalValue = that.originalValue;
+    this.value      = that.value;
   }
 }
 
@@ -111,17 +111,18 @@ class ReferenceItem {
 
   final Record<String> title; // `title`
   final Record<String> authors; // `authors`
-  var document = LazyRecord<ByteData?>('document'); // `document` (longblob)
+  final LazyRecord<ByteData?> document; // `document` (longblob)
   
   
   ReferenceItem({
     id = null,
     title = '',
     authors = '',
+    Completer<ByteData?>? documentCompleter = null,
   })  : id = id,
         title = Record<String>('title',  title),
         authors = Record<String>('authors',authors),
-        document = LazyRecord<ByteData?>('document');
+        document = LazyRecord('document', documentCompleter ?? Completer<ByteData?>());
 
   // Only used internally for deep copying
   ReferenceItem._fromRecords(
@@ -130,8 +131,9 @@ class ReferenceItem {
     Record<String> authors,
     LazyRecord<ByteData?> document,
   ) : id       = id,
-      title   = Record<String>('title',   ''),
-      authors = Record<String>('authors', '')
+      title    = Record<String>('title',   ''),
+      authors  = Record<String>('authors', ''),
+      document = LazyRecord('document', Completer<ByteData?>())
   {
     this.title.deepCopy(title);
     this.authors.deepCopy(authors);
@@ -154,22 +156,24 @@ class ReferenceItem {
       'authors': authors.value,
     };
 
-    if (document.isLazyValueAvailable) {
-      final data = document._lazyValue;
+    if (document.hasChanged()) {
+      final Future<ByteData?> futureData = document.value;
+      assert(futureData is! Completer<ByteData?>, 'Expected the document future to be completed by now.');
+      final ByteData? data = futureData as ByteData?;
+
       map['documentBlob'] =
           (data == null) ? null : base64Encode(data.buffer.asUint8List());
     }
     return map;
   }
 
-  // TODO make available the document data before comparing?
   bool hasChanged() {
 
     // If any field has changed, the item has changed.
     return <RecordBase<dynamic>>[
       title,
       authors,
-      /*document*/
+      document
     ]
         .any((f) => f.hasChanged());
   }
