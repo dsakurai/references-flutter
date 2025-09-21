@@ -100,6 +100,15 @@ class Record<T> extends IRecord<T> {
   }
 
   Record(columnName, value): this.value = value, originalValue = value, super(columnName);
+  
+  Record.copy(Record<T> record):
+    value = record.value,
+    originalValue = record.originalValue,
+    super(record.columnName)
+    {
+      checkConsistency(record);
+      assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
+    }
 
   void deepCopy(Record<T> that) {
     checkConsistency(that);
@@ -146,13 +155,10 @@ class ReferenceItem {
     Record<String> authors,
     LazyRecord<ByteData?> document,
   ) : id       = FixedRecord<int>.copy(id),
-      // TODO fix this to use `copy` constructors
-      title    = Record<String>(title.columnName,   ''),
-      authors  = Record<String>(authors.columnName, ''),
+      title    = Record<String>.copy(title),
+      authors  = Record<String>.copy(authors),
       document = LazyRecord(document.columnName, Completer<ByteData?>())
   {
-    this.title.deepCopy(title);
-    this.authors.deepCopy(authors);
     this.document.deepCopy(document);
   }
         
