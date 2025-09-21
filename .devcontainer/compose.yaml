@@ -25,6 +25,10 @@ services:
       context: "${WORKSPACE}/.devcontainer"
       dockerfile: Dockerfile
     userns_mode: keep-id
+
+    # Podman prefers full path
+    image: localhost/references_flutter_devcontainer-dev
+
     depends_on:
       db:
         condition: service_started
@@ -36,6 +40,8 @@ services:
       - type: bind
         source: "${WORKSPACE}"
         target: /workspace
+        bind:
+          selinux: "z"
     # Keep container alive under Podman (Debian base image would otherwise exit immediately).
     command: ["bash", "-lc", "while sleep 3600; do :; done"]
 
