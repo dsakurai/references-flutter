@@ -2,24 +2,30 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:typed_data';
 
+abstract class FixedRecordBase<T> {
+  final String columnName;
+
+  T get value;
+  
+  FixedRecordBase(this.columnName);
+  
+  void _deepCopy(RecordBase<T> that) {
+    assert( that.columnName == this.columnName, 'Cannot deep copy RecordBase with different column names.');
+  }
+}
+
 /*! A minimalistic class that allows to store a value.
  * This is the base class of LazyRecord.
  * The LazyRecord adds the ability to track whether the value is available or not.
  */
-abstract class RecordBase<T> {
-
-  final String columnName;
+abstract class RecordBase<T> extends FixedRecordBase<T> {
 
   set value (T newValue);
   T get value;
   
   bool hasChanged();
   
-  RecordBase(this.columnName);
-  
-  void _deepCopy(RecordBase<T> that) {
-    assert( that.columnName == this.columnName, 'Cannot deep copy RecordBase with different column names.');
-  }
+  RecordBase(String columnName): super(columnName);
 }
 
 // Platform-agnostic data holder that can be tested on the VM.
@@ -103,37 +109,46 @@ class Record<T> extends RecordBase<T> {
   }
 }
 
+class FixedRecord<T> extends FixedRecordBase<T> {
+  final T value;
+  
+  FixedRecord(columnName, this.value): super(columnName);
+
+  FixedRecord.copy(FixedRecord<T> record): value = record.value, super(record.columnName);
+}
+
 class ReferenceItem {
   // Minimal database fields we use (we keep the code maintainable this way).
   
-  // TODO make final and use LazyRecord<int?> id
-  int? id = null; // `id` INT AUTO_INCREMENT PRIMARY KEY
+  final FixedRecord<int> id; // `id` INT AUTO_INCREMENT PRIMARY KEY
 
   final Record<String> title; // `title`
   final Record<String> authors; // `authors`
   final LazyRecord<ByteData?> document; // `document` (longblob)
   
   
-  ReferenceItem({
-    id = null,
+  ReferenceItem(
+    int id,
+    {
     title = '',
     authors = '',
     Completer<ByteData?>? documentCompleter = null,
-  })  : id = id,
+  })  : id    = FixedRecord<int>('id', id),
         title = Record<String>('title',  title),
         authors = Record<String>('authors',authors),
         document = LazyRecord('document', documentCompleter ?? Completer<ByteData?>());
 
   // Only used internally for deep copying
   ReferenceItem._fromRecords(
-    int? id,
+    FixedRecord<int>    id,
     Record<String> title,
     Record<String> authors,
     LazyRecord<ByteData?> document,
-  ) : id       = id,
-      title    = Record<String>('title',   ''),
-      authors  = Record<String>('authors', ''),
-      document = LazyRecord('document', Completer<ByteData?>())
+  ) : id       = FixedRecord<int>.copy(id),
+      // TODO fix this to use `copy` constructors
+      title    = Record<String>(title.columnName,   ''),
+      authors  = Record<String>(authors.columnName, ''),
+      document = LazyRecord(document.columnName, Completer<ByteData?>())
   {
     this.title.deepCopy(title);
     this.authors.deepCopy(authors);

@@ -362,14 +362,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<ReferenceItem> _allItems = [
     ReferenceItem(
+      0,
       title: "Test Title",
       authors: "Test Author",
     ),
     ReferenceItem(
+      1,
       title: "Test Title 01",
       authors: "Test Author 01",
     ),
     ReferenceItem(
+      2,
       title: "Test Title 02",
       authors: "Test Author",
     ),
@@ -398,7 +401,9 @@ class _MyHomePageState extends State<MyHomePage> {
         _ExplorerWidget(allItems: _allItems,),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          var newReference = ReferenceItem();
+          var newReference = ReferenceItem(
+            -1 // not implemented yet
+            );
           _navigateEditRoute( // go to another page
             itemOriginal: newReference,
             context: context,
