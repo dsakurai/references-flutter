@@ -93,7 +93,7 @@ class Record<T> extends IRecord<T> {
 
   T value;
   
-  /*final*/ T originalValue;
+  final T originalValue;
   bool hasChanged() {
     assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
     return value != originalValue;
@@ -107,14 +107,10 @@ class Record<T> extends IRecord<T> {
     super(record.columnName)
     {
       checkConsistency(record);
-      assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
+      for (var v in [value, originalValue]) {
+        assert(v is String || v is int || v is double || v is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${v.runtimeType}.');
+      }
     }
-
-  void deepCopy(Record<T> that) {
-    checkConsistency(that);
-    this.originalValue = that.originalValue;
-    this.value      = that.value;
-  }
 }
 
 class FixedRecord<T> extends IFixedRecord<T> {
@@ -149,24 +145,13 @@ class ReferenceItem {
         document = LazyRecord('document', documentCompleter ?? Completer<ByteData?>());
 
   // Only used internally for deep copying
-  ReferenceItem._fromRecords(
-    FixedRecord<int>    id,
-    Record<String> title,
-    Record<String> authors,
-    LazyRecord<ByteData?> document,
-  ) : id       = FixedRecord<int>.copy(id),
-      title    = Record<String>.copy(title),
-      authors  = Record<String>.copy(authors),
-      document = LazyRecord.copy(document);
+  ReferenceItem.copy(ReferenceItem item) :
+    id = FixedRecord<int>.copy(item.id),
+    title = Record<String>.copy(item.title),
+    authors = Record<String>.copy(item.authors),
+    document = LazyRecord.copy(item.document);
 
-  ReferenceItem deepCopy() => ReferenceItem._fromRecords(
-        id,
-        title,
-        authors,
-        document,
-      );
-
-  Map<String, dynamic> toJson() {
+  Future<Map<String, dynamic>> toJson() async {
   
     // Create json and conditionally add an optional property
     final map = <String, dynamic>{
@@ -178,7 +163,7 @@ class ReferenceItem {
     if (document.hasChanged()) {
       final Future<ByteData?> futureData = document.value;
       assert(futureData is! Completer<ByteData?>, 'Expected the document future to be completed by now.');
-      final ByteData? data = futureData as ByteData?;
+      final ByteData? data = await futureData;
 
       map['documentBlob'] =
           (data == null) ? null : base64Encode(data.buffer.asUint8List());
