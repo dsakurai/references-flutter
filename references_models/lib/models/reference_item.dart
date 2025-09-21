@@ -64,12 +64,12 @@ class LazyRecord<T> extends IRecord<Future<T>> {
   LazyRecord.withValue(columnName, T value)
     : this.value_completer = Completer<T>()..complete(value),
   super(columnName);
-
-  void deepCopy(LazyRecord<T> that) {
-    value_completer = that.value_completer;
-    _hasChanged = that._hasChanged;
-
-    checkConsistency(that);
+  
+  LazyRecord.copy(LazyRecord<T> record)
+      : value_completer = record.value_completer,
+        _hasChanged = record._hasChanged,
+        super(record.columnName) {
+    checkConsistency(record);
   }
 
   // LazyRecord.withData(T newValue, bool available) {
@@ -157,10 +157,7 @@ class ReferenceItem {
   ) : id       = FixedRecord<int>.copy(id),
       title    = Record<String>.copy(title),
       authors  = Record<String>.copy(authors),
-      document = LazyRecord(document.columnName, Completer<ByteData?>())
-  {
-    this.document.deepCopy(document);
-  }
+      document = LazyRecord.copy(document);
 
   ReferenceItem deepCopy() => ReferenceItem._fromRecords(
         id,
