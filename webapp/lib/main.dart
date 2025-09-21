@@ -233,7 +233,7 @@ Future<Navigator?> _navigateEditRoute({
   Function? onSave, // Designed for adding a new item
   }) {
 
-  var itemForEdit = ReferenceItem.copy(itemOriginal);
+  var itemForEdit = ReferenceItem.from(itemOriginal);
 
   return Navigator.push(
     context,

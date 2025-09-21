@@ -65,7 +65,7 @@ class LazyRecord<T> extends IRecord<Future<T>> {
     : this.value_completer = Completer<T>()..complete(value),
   super(columnName);
   
-  LazyRecord.copy(LazyRecord<T> record)
+  LazyRecord.from(LazyRecord<T> record)
       : value_completer = record.value_completer,
         _hasChanged = record._hasChanged,
         super(record.columnName) {
@@ -101,7 +101,7 @@ class Record<T> extends IRecord<T> {
 
   Record(columnName, value): this.value = value, originalValue = value, super(columnName);
   
-  Record.copy(Record<T> record):
+  Record.from(Record<T> record):
     value = record.value,
     originalValue = record.originalValue,
     super(record.columnName)
@@ -118,7 +118,7 @@ class FixedRecord<T> extends IFixedRecord<T> {
   
   FixedRecord(columnName, this.value): super(columnName);
 
-  FixedRecord.copy(FixedRecord<T> record): value = record.value, super(record.columnName) {
+  FixedRecord.from(FixedRecord<T> record): value = record.value, super(record.columnName) {
     assert(value is String || value is int || value is double || value is bool, 'Expected value to be a primitive type (String, int, double, bool) since we compare it by value, got ${value.runtimeType}.');
   }
 }
@@ -145,11 +145,11 @@ class ReferenceItem {
         document = LazyRecord('document', documentCompleter ?? Completer<ByteData?>());
 
   // Only used internally for deep copying
-  ReferenceItem.copy(ReferenceItem item) :
-    id = FixedRecord<int>.copy(item.id),
-    title = Record<String>.copy(item.title),
-    authors = Record<String>.copy(item.authors),
-    document = LazyRecord.copy(item.document);
+  ReferenceItem.from(ReferenceItem item) :
+    id = FixedRecord<int>.from(item.id),
+    title = Record<String>.from(item.title),
+    authors = Record<String>.from(item.authors),
+    document = LazyRecord.from(item.document);
 
   Future<Map<String, dynamic>> toJson() async {
   
