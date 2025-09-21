@@ -161,7 +161,7 @@ class ReferenceItem {
   {
     this.document.deepCopy(document);
   }
-        
+
   ReferenceItem deepCopy() => ReferenceItem._fromRecords(
         id,
         title,
