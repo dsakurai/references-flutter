@@ -16,8 +16,15 @@
     "remoteUser": "vscode",
     
     "features": {
-        "git": "os-provided", // Enable VSCode functionality to re-use git credentials: https://stackoverflow.com/a/73327749
-        "sshd": "latest"      // "Add a SSH server into a container so that you can use an external terminal, sftp, or SSHFS to interact with it." https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/sshd.md
+        // "git": "os-provided", // Enable VSCode functionality to re-use git credentials: https://stackoverflow.com/a/73327749
+        // "sshd": "latest"      // "Add a SSH server into a container so that you can use an external terminal, sftp, or SSHFS to interact with it." https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/sshd.md
+        "ghcr.io/devcontainers/features/git:1": {
+            // "ppa": true,
+            "version": "os-provided"
+        },
+        "ghcr.io/devcontainers/features/sshd:1": {
+            "version": "latest"
+        }
     },
 
     "customizations": {

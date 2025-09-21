@@ -45,6 +45,11 @@ services:
     # Keep container alive under Podman (Debian base image would otherwise exit immediately).
     command: ["bash", "-lc", "while sleep 3600; do :; done"]
 
+    # Avoid setgroups error with crun in rootless mode
+    # TODO is this really necessary?
+    security_opt:
+      - no-new-privileges:true
+
     networks:
       devnet:
         aliases:
