@@ -89,6 +89,11 @@ class ReferenceItemWidgetState extends State<ReferenceItemWidget> {
               },
               child: Text("Save")
             ),
+            Row( children: [
+                Text("ID: "),
+                Text( widget.referenceItem.id.value.toString())
+              ],
+            ),
             Row(
               children: [
                 Text("Title: "),
@@ -400,9 +405,17 @@ class _MyHomePageState extends State<MyHomePage> {
       body:
         _ExplorerWidget(allItems: _allItems,),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           var newReference = ReferenceItem(
-            -1 // not implemented yet
+              // new id
+              await () async {
+                final response = await http.get(Uri.parse('http://localhost:8080/api/new'));
+                if (response.statusCode == 200) {
+                  final id = int.tryParse(response.body.trim());
+                  if (id != null) return id;
+                }
+                throw StateError('Failed to fetch new ID');
+              }(),
             );
           _navigateEditRoute( // go to another page
             itemOriginal: newReference,

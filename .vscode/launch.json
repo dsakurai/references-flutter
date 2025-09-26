@@ -17,14 +17,16 @@
             "type": "dart",
             "flutterMode": "release",
             "cwd": "${workspaceFolder}/webapp",
-            "deviceId": "web-server"
+            "deviceId": "web-server",
+            "toolArgs": ["--web-port", "8081"]
         },
         {
             "name": "webapp (debug mode)",
             "request": "launch",
             "type": "dart",
             "cwd": "${workspaceFolder}/webapp",
-            "deviceId": "web-server"
+            "deviceId": "web-server",
+            "toolArgs": ["--web-port", "8081"]
         },
         {
             "name": "webapp (profile mode)",
@@ -32,7 +34,8 @@
             "type": "dart",
             "flutterMode": "profile",
             "cwd": "${workspaceFolder}/webapp",
-            "deviceId": "web-server"
+            "deviceId": "web-server",
+            "toolArgs": ["--web-port", "8081"]
         },
     ]
 }

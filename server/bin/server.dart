@@ -3,11 +3,33 @@ import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
 import 'package:mysql1/mysql1.dart';
 
+Middleware _cors() {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '8081', // tighten in prod
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
+  };
+
+  return (Handler innerHandler) {
+    return (Request request) async {
+      if (request.method == 'OPTIONS') {
+        return Response(204, headers: corsHeaders);
+      }
+      final resp = await innerHandler(request);
+      return resp.change(headers: corsHeaders);
+    };
+  };
+}
+
 Future<void> main(List<String> args) async {
   final router = Router();
 
   // All API requests go through /api
   router.get('/api', (Request request) async {
+    return Response.ok('API is up');
+  });
+
+  router.get('/api/new', (Request request) async {
     final settings = ConnectionSettings(
       host: 'db',
       port: 3306,
@@ -17,19 +39,20 @@ Future<void> main(List<String> args) async {
     );
 
     try {
-      final conn = await MySqlConnection.connect(settings);
-      await conn.query(
+      final db = await MySqlConnection.connect(settings);
+      final res = await db.query(
         "INSERT INTO `References` (title, authors) VALUES (?, ?)",
         ['Sample Title', 'Author One, Author Two'],
       );
-      await conn.close();
-      return Response.ok('Inserted stub row into References table.');
+      await db.close();
+      return Response.ok('${res.insertId!}');
     } catch (e) {
       return Response.internalServerError(body: 'Error: $e');
     }
   });
 
   final handler = const Pipeline()
+      .addMiddleware(_cors())
       .addMiddleware(logRequests())
       .addHandler(router);
 
