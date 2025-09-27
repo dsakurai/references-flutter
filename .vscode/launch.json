@@ -37,5 +37,12 @@
             "deviceId": "web-server",
             "toolArgs": ["--web-port", "8081"]
         },
+    ],
+    "compounds": [
+        {
+            "name": "Run full (release)",
+            "configurations": ["server", "webapp (release mode)"],
+            "stopAll": true
+        }
     ]
 }
