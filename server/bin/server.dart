@@ -5,7 +5,7 @@ import 'package:mysql1/mysql1.dart';
 
 Middleware _cors() {
   const corsHeaders = {
-    'Access-Control-Allow-Origin': '8081', // tighten in prod
+    'Access-Control-Allow-Origin': '*', // Allow from browser
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
   };
