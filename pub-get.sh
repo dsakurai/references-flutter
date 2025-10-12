@@ -14,3 +14,7 @@ echo ""
 echo "Running pub get in directory $PWD/webapp..."
     (cd webapp && flutter pub get)
 echo ""
+
+echo "Enabling Flutter web for $PWD/webapp..."
+    (cd webapp && flutter config --enable-web)
+echo ""
