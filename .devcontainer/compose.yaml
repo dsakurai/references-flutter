@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: docker.io/library/mariadb:latest
@@ -37,11 +35,7 @@ services:
     # Use a user-defined network (see bottom) instead of slirp4netns network_mode.
     # slirp4netns has issues with DNS resolution, as it prioritizes IPv6, which still has some problems as of today.
     volumes:
-      - type: bind
-        source: "${WORKSPACE}"
-        target: /workspace
-        bind:
-          selinux: "z"
+      - "${WORKSPACE}:/workspace:Z"
     # Keep container alive under Podman (Debian base image would otherwise exit immediately).
     command: ["bash", "-lc", "while sleep 3600; do :; done"]
 
